@@ -86,6 +86,48 @@ Testing thoroughly to catch bugs early. Each feature is tested for:
 
 **Result:** No TypeScript errors found
 
+### ✅ Test 8: Navigation and View Switching
+**Status:** PASSED  
+**What was tested:**
+- Hub view correctly hides sidebar/header  
+- View map includes all necessary views
+- Navigation handler properly sets view and params
+- User change triggers default view selection
+- Detail panel properly integrated
+
+**Result:** Navigation logic is solid
+
+### ✅ Test 9: RequestItem Type Structure
+**Status:** PASSED  
+**What was tested:**
+- RequestItem interface includes new 'Short' status
+- shortReason field with proper types
+- shortNotes, shortReportedBy, shortReportedAt fields exist
+
+**Result:** Type definitions are complete and correct
+
+### ✅ Test 10: Mock Request Items Structure
+**Status:** PASSED  
+**What was tested:**
+- Mock request items properly structured
+- Pack numbers included
+- All required fields present
+
+**Result:** Mock data structure matches types perfectly
+
+### ✅ Test 11: Data Flow - Create Request Workflow
+**Status:** PASSED  
+**What was tested:**
+- Complete MRF creation flow from handleSubmit
+- Duplicate prevention check logic
+- Update mockTransactionalData for WO Materials view
+- Update mockMaterialLocks with auto-lock
+- Add to mockRequestsData for Qube Pick List
+- Create line items in mockRequestItems for Picking View
+- Status history initialization
+
+**Result:** Data flow is comprehensive and correctly updates all dependent views
+
 ---
 
 ## Tests Still Needed
