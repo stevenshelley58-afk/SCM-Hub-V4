@@ -79,7 +79,7 @@ const App = () => {
             component: () => React.createElement(AdminControlPanelView, {})
         },
         'exception-dashboard': {
-            title: 'Exception Dashboard',
+            title: 'Partial Picks Dashboard',
             component: () => React.createElement(ExceptionDashboardView, {})
         }
     };

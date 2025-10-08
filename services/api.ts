@@ -93,7 +93,9 @@ export let mockRequestItems = {
     ]
 };
 
-export const exceptionReasons = ['Item Damaged', 'Quantity Mismatch', 'Location Empty', 'Wrong Item in Location', 'Other'];
+// Renamed from exceptionReasons to shortReasons per stakeholder feedback
+export const exceptionReasons = ['Item Damaged', 'Quantity Mismatch', 'Location Empty', 'Wrong Item in Location', 'Quarantine', 'Other'];
+export const shortReasons = ['Item Damaged', 'Quantity Mismatch', 'Location Empty', 'Wrong Item in Location', 'Quarantine', 'Other'];
 
 export const navLinks: { [key: string]: { view: string; label: string; icon: string }[] } = {
     requestor: [

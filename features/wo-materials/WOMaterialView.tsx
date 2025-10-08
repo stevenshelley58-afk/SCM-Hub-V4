@@ -38,16 +38,88 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
     }, [mainSearchTerm]);
     
     const handleSelectionChange = useCallback((currentSelection: { [key: string]: boolean }) => {
-        setSelected(currentSelection);
+        // Pack selection logic: if user selects/deselects item from pack, select/deselect all items in pack
+        const updatedSelection = { ...currentSelection };
+        
+        // Check each changed item for pack logic
+        Object.entries(currentSelection).forEach(([pKey, isSelected]) => {
+            const material = masterGridData.find(m => m.pKey === pKey);
+            if (material && material.packNumber && material.packNumber !== 'N/A') {
+                // Find all materials in the same pack
+                const packMaterials = masterGridData.filter(m => 
+                    m.packNumber === material.packNumber && m.packNumber !== 'N/A'
+                );
+                
+                if (isSelected) {
+                    // Selecting pack item → select all in pack
+                    packMaterials.forEach(packMaterial => {
+                        updatedSelection[packMaterial.pKey] = true;
+                    });
+                    if (packMaterials.length > 1) {
+                        setToast({ 
+                            show: true, 
+                            message: `📦 Selected ${packMaterials.length} items from Pack ${material.packNumber}` 
+                        });
+                    }
+                } else {
+                    // Deselecting pack item → show warning and deselect all
+                    const packSelectedCount = packMaterials.filter(m => updatedSelection[m.pKey]).length;
+                    if (packSelectedCount === packMaterials.length) {
+                        // All pack items are selected, user is deselecting one
+                        if (confirm(`This will deselect all ${packMaterials.length} items from Pack ${material.packNumber}. Continue?`)) {
+                            packMaterials.forEach(packMaterial => {
+                                updatedSelection[packMaterial.pKey] = false;
+                            });
+                        } else {
+                            // User cancelled, keep original selection
+                            updatedSelection[pKey] = true;
+                        }
+                    }
+                }
+            }
+        });
+        
+        setSelected(updatedSelection);
     }, []);
 
     const handleSubmit = (formData: any) => {
-        const newMrfId = `MRF-${Math.floor(1200 + Math.random() * 100)}`;
         const selectedItems = Object.keys(selected);
         
+        // CRITICAL: Check for duplicate requests (prevent requesting already-requested materials)
+        const duplicates: string[] = [];
+        const activeStatuses = ['Submitted', 'Picking', 'Staged', 'In Transit', 'Partial Pick - Open', 'Partial Pick - Closed', 'On Hold'];
+        
+        selectedItems.forEach(pKey => {
+            const existing = mockTransactionalData[pKey];
+            if (existing) {
+                // Check if material has active request
+                const existingRequest = mockRequestsData.find(r => r.id === existing.mrfId);
+                if (existingRequest && activeStatuses.includes(existingRequest.status)) {
+                    const material = masterGridData.find(m => m.pKey === pKey);
+                    duplicates.push(`${material?.materialDescription || pKey} (already in ${existing.mrfId})`);
+                }
+            }
+        });
+        
+        if (duplicates.length > 0) {
+            setToast({ 
+                show: true, 
+                message: `❌ Cannot create request - the following materials are already requested:\n\n${duplicates.join('\n')}` 
+            });
+            return; // Block request creation
+        }
+        
+        const newMrfId = `MRF-${Math.floor(1200 + Math.random() * 100)}`;
+        
         // Update transactional data (for WO Materials status column)
+        // Also creates auto-lock on materials
         selectedItems.forEach(pKey => {
             mockTransactionalData[pKey] = { mrfId: newMrfId, status: 'Submitted' };
+            // Auto-lock materials when requested (prevent duplicates)
+            mockMaterialLocks[pKey] = { 
+                lockedBy: `System (${newMrfId})`, 
+                comment: `Auto-locked by request ${newMrfId}` 
+            };
         });
         
         // Add new request to mockRequestsData (for Qube Pick List)
@@ -62,10 +134,18 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
             workOrders: workOrders,
             createdDate: new Date().toLocaleDateString('en-US'),
             RequiredByTimestamp: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            RequiredByTime: formData.RequiredTime || undefined, // Optional time
+            RequestedBy: currentUser.name,
             MC_Priority_Flag: formData.Priority === 'P1',
             DeliveryLocation: formData.DeliverTo || 'Unknown',
             requestorName: currentUser.name,
-            acPriority: null
+            acPriority: null,
+            statusHistory: [{
+                status: 'Submitted',
+                timestamp: new Date().toISOString(),
+                changedBy: currentUser.name,
+                reason: 'Request created'
+            }]
         };
         
         mockRequestsData.unshift(newRequest); // Add to beginning of array
@@ -154,7 +234,20 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         { accessorKey: 'packNumber', header: 'Pack #' },
         { accessorKey: 'storageLocation', header: 'Location' },
         { accessorKey: 'jdeItemNo', header: 'JDE Item No' },
-        { accessorKey: 'materialDescription', header: 'Description' },
+        { 
+            accessorKey: 'materialDescription', 
+            header: 'Description',
+            cell: ({ row }: { row: WOMaterial }) => {
+                const hasPack = row.packNumber && row.packNumber !== 'N/A';
+                return React.createElement('div', { className: 'flex items-center gap-2' },
+                    React.createElement('span', null, row.materialDescription),
+                    hasPack && React.createElement('span', { 
+                        className: 'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800',
+                        title: `Pack ${row.packNumber}`
+                    }, '📦', row.packNumber)
+                );
+            }
+        },
         { accessorKey: 'workOrderQty', header: 'WO Qty' },
         { accessorKey: 'actions', header: '', cell: ({ row }: { row: WOMaterial }) => React.createElement(RowActions, { row }) }
     ], [openDetailPanel, currentUser.role]);

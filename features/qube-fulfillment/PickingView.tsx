@@ -5,7 +5,7 @@ import { ConfirmationModal } from '../../components/ui/Modal';
 import { Popover } from '../../components/ui/Popover';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { ICONS } from '../../components/ui/Icons';
-import { mockRequestItems, mockRequestsData, exceptionReasons } from '../../services/api';
+import { mockRequestItems, mockRequestsData, exceptionReasons, shortReasons } from '../../services/api';
 // Fix: Corrected import path for types.
 import { RequestItem, MaterialRequest } from '../../types/index';
 
@@ -40,7 +40,7 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
         setItems(JSON.parse(JSON.stringify(mockRequestItems[request.id as keyof typeof mockRequestItems] || [])));
     }, [request.id]);
 
-    const updateItemStatus = (itemPKeys: string | string[], newStatus: 'Open' | 'Picked' | 'Exception', extraData = {}) => {
+    const updateItemStatus = (itemPKeys: string | string[], newStatus: 'Open' | 'Picked' | 'Short', extraData = {}) => {
         const keys = Array.isArray(itemPKeys) ? itemPKeys : [itemPKeys];
         const newItems = items.map(item => {
             if (keys.includes(item.pKey)) {
@@ -89,7 +89,7 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
             React.createElement(Popover, { isOpen, anchorEl, onClose: handleClose, className: 'p-1' },
                 React.createElement('button', { onClick: () => { updateItemStatus(row.pKey, 'Picked'); handleClose(); }, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Mark as Picked'),
                 React.createElement('button', { onClick: () => { setActiveModal('partialPick'); setModalData(row); handleClose(); }, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Log Partial Pick'),
-                React.createElement('button', { onClick: () => { setActiveModal('flagException'); setModalData(row); handleClose(); }, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Flag Exception')
+                React.createElement('button', { onClick: () => { setActiveModal('flagShort'); setModalData(row); handleClose(); }, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Mark as Short')
             )
         );
     };
@@ -116,28 +116,28 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
         }
         if (activeModal === 'stageCompleteConfirm') {
             const pickedCount = items.filter(i => i.status === 'Picked').length;
-            const exceptionCount = items.filter(i => i.status === 'Exception').length;
+            const shortCount = items.filter(i => i.status === 'Short').length;
             // Fix: Added children to ConfirmationModal call to satisfy required prop
             return React.createElement(ConfirmationModal, {
                 isOpen: true, title: `Complete Request ${request.id}?`, confirmText: 'Confirm Stage Complete',
                 onCancel: () => setActiveModal(null), onConfirm: handleStageComplete
             }, React.createElement('div', { className: 'space-y-2' },
                 React.createElement('p', null, `Items Picked: ${pickedCount}`),
-                React.createElement('p', null, `Items with Exceptions: ${exceptionCount}`),
+                React.createElement('p', null, `Items Short: ${shortCount}`),
                 React.createElement('p', { className: 'mt-4 text-sm text-gray-500' }, 'This action cannot be undone and will send a delivery task to the LTR system.')
             ));
         }
-        if (activeModal === 'flagException' && modalData) {
+        if (activeModal === 'flagShort' && modalData) {
             // Fix: Added children to ConfirmationModal call to satisfy required prop
              return React.createElement(ConfirmationModal, {
-                 isOpen: true, title: 'Flag Exception', onCancel: () => setActiveModal(null),
-                 onConfirm: () => { updateItemStatus(modalData.pKey, 'Exception'); setActiveModal(null); }, confirmText: 'Flag Item'
+                 isOpen: true, title: 'Mark Item as Short', onCancel: () => setActiveModal(null),
+                 onConfirm: () => { updateItemStatus(modalData.pKey, 'Short'); setActiveModal(null); }, confirmText: 'Mark as Short'
              }, React.createElement('div', { className: 'space-y-4' },
                  React.createElement('p', null, `Item: ${modalData.materialDescription}`),
                  React.createElement('div', null,
-                     React.createElement('label', { htmlFor: 'exceptionReason', className: 'block text-sm font-medium text-gray-700' }, 'Reason'),
-                     React.createElement('select', { id: 'exceptionReason', className: 'mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md' },
-                         exceptionReasons.map(r => React.createElement('option', { key: r }, r))
+                     React.createElement('label', { htmlFor: 'shortReason', className: 'block text-sm font-medium text-gray-700' }, 'Short Reason'),
+                     React.createElement('select', { id: 'shortReason', className: 'mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md' },
+                         shortReasons.map(r => React.createElement('option', { key: r }, r))
                      )
                  ),
                  React.createElement('div', null,
@@ -154,7 +154,7 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
             // Fix: Added children to ConfirmationModal call to satisfy required prop
              return React.createElement(ConfirmationModal, {
                  isOpen: true, title: 'Log Partial Pick', onCancel: () => setActiveModal(null),
-                 onConfirm: () => { updateItemStatus(modalData.pKey, 'Exception', { comment: 'Partial Pick' }); setActiveModal(null); }, confirmText: 'Log Partial Pick'
+                 onConfirm: () => { updateItemStatus(modalData.pKey, 'Short', { comment: 'Partial Pick' }); setActiveModal(null); }, confirmText: 'Log Partial Pick'
              }, React.createElement('div', { className: 'space-y-4' },
                  React.createElement('p', null, `Item: ${modalData.materialDescription}`),
                  React.createElement('p', null, `Requested Quantity: ${modalData.qtyRequested}`),

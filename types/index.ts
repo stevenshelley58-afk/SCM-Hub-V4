@@ -7,26 +7,48 @@ export interface User {
 
 export interface MaterialRequest {
     id: string;
-    status: 'Submitted' | 'Picking' | 'In Transit' | 'Exception' | 'Delivered' | 'Ready for Collection';
+    status: 'Submitted' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
     priority: 'P1' | 'P2' | 'P3' | 'P4';
     items: number;
     workOrders: string;
     createdDate: string;
     RequiredByTimestamp: string;
+    RequiredByTime?: string; // Optional time
+    RequestedBy: string; // Added for tracking who created it
     MC_Priority_Flag: boolean;
     DeliveryLocation: string;
     requestorName: string;
     acPriority: number | null;
+    statusHistory?: StatusHistoryEntry[];
+    hasBackwardsTransition?: boolean;
+    onHoldInfo?: {
+        putOnHoldBy: string;
+        putOnHoldAt: string;
+        reason: string;
+        expectedResumeDate?: string;
+    };
 }
 
 export interface RequestItem {
     pKey: string;
-    status: 'Open' | 'Picked' | 'Exception';
+    status: 'Open' | 'Picked' | 'Short';
     qtyRequested: number;
     materialDescription: string;
     itemNumber: string;
     storageLocation: string;
     packNumber: string;
+    shortReason?: 'Item Damaged' | 'Quantity Mismatch' | 'Location Empty' | 'Wrong Item in Location' | 'Quarantine' | 'Other';
+    shortNotes?: string;
+    shortReportedBy?: string;
+    shortReportedAt?: string;
+}
+
+export interface StatusHistoryEntry {
+    status: string;
+    timestamp: string;
+    changedBy: string;
+    reason?: string;
+    isBackwards?: boolean;
 }
 
 export interface WOMaterial {
