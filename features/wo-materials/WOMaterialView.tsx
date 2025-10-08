@@ -80,7 +80,7 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         });
         
         setSelected(updatedSelection);
-    }, []);
+    }, [masterGridData]);
 
     const handleSubmit = (formData: any) => {
         const selectedItems = Object.keys(selected);

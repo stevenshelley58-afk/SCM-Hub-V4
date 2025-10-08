@@ -50,7 +50,7 @@ export const masterGridData = generateLargeData(1000);
 export let mockTransactionalData: { [key: string]: { mrfId: string; status: string } } = {
     "8226710000": { "mrfId": "MRF-1135", "status": "Delivered" }, // pKey for i=0
     "8226710002": { "mrfId": "MRF-1136", "status": "In Transit" }, // pKey for i=2
-    "8226710003": { "mrfId": "MRF-1137", "status": "Exception" } // pKey for i=3
+    "8226710003": { "mrfId": "MRF-1137", "status": "Partial Pick - Open" } // pKey for i=3
 };
 
 export let mockMaterialLocks: { [key: string]: { lockedBy: string; comment: string } } = {
@@ -63,7 +63,7 @@ export let mockRequestsData: MaterialRequest[] = [
     { id: 'MRF-1240', status: 'Submitted', priority: 'P2', items: 6, workOrders: '822671', createdDate: '07/13/2025', RequiredByTimestamp: '2025-07-14T08:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Ops Center Trailer 1', requestorName: 'Jane Doe', acPriority: 3 },
     { id: 'MRF-1239', status: 'Picking', priority: 'P3', items: 3, workOrders: '822671', createdDate: '07/13/2025', RequiredByTimestamp: '2025-07-14T10:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Laydown Yard 7', requestorName: 'Jane Doe', acPriority: null },
     { id: 'MRF-1238', status: 'In Transit', priority: 'P2', items: 8, workOrders: '822670', createdDate: '07/12/2025', RequiredByTimestamp: '2025-07-13T11:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Weld Shop', requestorName: 'John Smith', acPriority: null },
-    { id: 'MRF-1237', status: 'Exception', priority: 'P4', items: 1, workOrders: '844123', createdDate: '07/12/2025', RequiredByTimestamp: '2025-07-15T16:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Unit 12 Work Area', requestorName: 'Jane Doe', acPriority: null },
+    { id: 'MRF-1237', status: 'Partial Pick - Closed', priority: 'P4', items: 1, workOrders: '844123', createdDate: '07/12/2025', RequiredByTimestamp: '2025-07-15T16:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Unit 12 Work Area', requestorName: 'Jane Doe', acPriority: null },
     { id: 'MRF-1236', status: 'Picking', priority: 'P2', items: 12, workOrders: '855798', createdDate: '07/12/2025', RequiredByTimestamp: '2025-07-13T09:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Laydown Yard 7', requestorName: 'Mike Jones', acPriority: null },
     { id: 'MRF-1235', status: 'In Transit', priority: 'P3', items: 4, workOrders: '855798', createdDate: '07/12/2025', RequiredByTimestamp: '2025-07-13T14:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Ops Center Trailer 1', requestorName: 'Jane Doe', acPriority: null },
     { id: 'MRF-1234', status: 'Submitted', priority: 'P2', items: 5, workOrders: '822670', createdDate: '07/10/2025', RequiredByTimestamp: '2025-07-13T16:00:00Z', MC_Priority_Flag: false, DeliveryLocation: 'Weld Shop', requestorName: 'John Smith', acPriority: 2 },
