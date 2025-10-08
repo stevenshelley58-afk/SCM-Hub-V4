@@ -128,8 +128,8 @@ export const ACDashboardView = ({ openDetailPanel }: ACDashboardViewProps) => {
         React.createElement(LockedMaterialsModal, { isOpen: isLockedModalOpen, onClose: () => setLockedModalOpen(false), mockMaterialLocks, masterGridData }),
         React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
             React.createElement(SummaryCard, { 
-                title: "⚠️ My Scope's Exceptions", 
-                value: mockRequestsData.filter(r => r.status === 'Exception').length, 
+                title: "⚠️ My Scope's Partial Picks", 
+                value: mockRequestsData.filter(r => r.status === 'Partial Pick - Open' || r.status === 'Partial Pick - Closed').length, 
                 icon: React.createElement(ICONS.ExclamationTriangleIcon, {}),
                 color: 'amber',
                 onClick: () => alert('Navigate to pre-filtered list of exceptions.')
