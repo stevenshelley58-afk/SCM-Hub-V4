@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { User } from '../types/index';
+import { users } from '../services/api';
 import '../hub-styles.css';
 
 interface OperationsHubProps {
@@ -29,10 +30,10 @@ const site = {
 };
 
 const hubUsers = [
-  { id: "u-mc", display_name: "Material Coordinator", role: "MC" },
-  { id: "u-ac", display_name: "Area Coordinator", role: "AC" },
-  { id: "u-qube", display_name: "Qube Warehouse", role: "Warehouse" },
-  { id: "u-toll", display_name: "Toll Logistics", role: "Logistics" }
+  { id: "requestor", display_name: "Jane Doe", role: "Requestor" },
+  { id: "ac", display_name: "Steve", role: "Area Coordinator" },
+  { id: "qube", display_name: "JJ", role: "Qube User" },
+  { id: "mc", display_name: "Corey", role: "Material Coordinator" }
 ];
 
 const icons = {
@@ -104,6 +105,13 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
   const handleModalContinue = () => {
     if (!selectedUser) return;
     
+    // Map hub user to actual User object from API
+    const actualUser = users[selectedUser.id as keyof typeof users];
+    if (!actualUser) {
+      console.error("User not found:", selectedUser.id);
+      return;
+    }
+    
     // Save to localStorage
     try {
       localStorage.setItem("mrf_session_user", JSON.stringify(selectedUser));
@@ -112,7 +120,8 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     }
     
     setShowModal(false);
-    onNavigate("wo-materials", { user: selectedUser });
+    onUserChange(actualUser);
+    onNavigate("wo-materials");
   };
 
   const filteredUsers = hubUsers.filter(user =>
