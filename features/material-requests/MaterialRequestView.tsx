@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Table } from '../../components/ui/Table';
 import { DonutChart } from '../../components/ui/DonutChart';
 import { StatusPill } from '../../components/ui/StatusPill';
+import { InfoTooltip } from '../../components/ui/Tooltip';
 import { mockRequestsData } from '../../services/api';
 // Fix: Corrected import path for types.
 import { MaterialRequest } from '../../types/index';
@@ -49,6 +50,23 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
     const dataWithClick = useMemo(() => mockRequestsData.map(req => ({ ...req, onClick: openDetailPanel })), [openDetailPanel, refreshKey]);
 
     return React.createElement('div', { className: 'space-y-6' },
+        // Helpful header
+        React.createElement('div', { className: 'bg-green-50 border-l-4 border-green-400 p-4 rounded' },
+            React.createElement('div', { className: 'flex items-start' },
+                React.createElement('div', { className: 'flex-shrink-0' },
+                    React.createElement('span', { className: 'text-2xl' }, '📦')
+                ),
+                React.createElement('div', { className: 'ml-3 flex-1' },
+                    React.createElement('div', { className: 'flex items-center gap-2' },
+                        React.createElement('h3', { className: 'text-sm font-medium text-green-800' }, 'My Material Requests'),
+                        React.createElement(InfoTooltip, { content: 'Track all your material requests from submission to delivery. Click any row for details.' })
+                    ),
+                    React.createElement('p', { className: 'mt-1 text-sm text-green-700' },
+                        'Monitor the status of your requested materials. Warehouse is working to fulfill your requests in priority order.'
+                    )
+                )
+            )
+        ),
         React.createElement('div', { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" },
              React.createElement('div', { className: "bg-white p-5 rounded-xl border border-gray-200" },
                 React.createElement('h3', { className: "text-base font-semibold text-gray-800 mb-4" }, "My Request Status"),

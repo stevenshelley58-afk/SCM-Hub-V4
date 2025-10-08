@@ -6,6 +6,7 @@ import { RequestTray } from '../../components/ui/RequestTray';
 import { DeliveryDetailsModal, LockMaterialModal } from '../../components/ui/Modal';
 import { Popover } from '../../components/ui/Popover';
 import { StatusPill } from '../../components/ui/StatusPill';
+import { InfoTooltip } from '../../components/ui/Tooltip';
 import { ICONS } from '../../components/ui/Icons';
 import { masterGridData, mockTransactionalData, mockMaterialLocks, mockRequestsData, mockRequestItems } from '../../services/api';
 // Fix: Corrected import path for types.
@@ -255,6 +256,28 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
     const tableDataWithStatus = useMemo(() => tableData.map(d => ({...d, isDisabled: !!mockTransactionalData[d.pKey] || !!mockMaterialLocks[d.pKey] })), [tableData]);
 
     return React.createElement('div', { className: 'space-y-6' },
+        // Helpful header with context
+        React.createElement('div', { className: 'bg-blue-50 border-l-4 border-blue-400 p-4 rounded' },
+            React.createElement('div', { className: 'flex items-start' },
+                React.createElement('div', { className: 'flex-shrink-0' },
+                    React.createElement('span', { className: 'text-2xl' }, '📋')
+                ),
+                React.createElement('div', { className: 'ml-3 flex-1' },
+                    React.createElement('div', { className: 'flex items-center gap-2' },
+                        React.createElement('h3', { className: 'text-sm font-medium text-blue-800' }, 'Work Order Materials'),
+                        React.createElement(InfoTooltip, { content: 'MRF = Material Request Form. Select materials from your work orders to request them from the warehouse.' })
+                    ),
+                    React.createElement('div', { className: 'mt-2 text-sm text-blue-700' },
+                        React.createElement('p', null, 
+                            'Select materials needed for your work orders. Each work order line represents a specific task requiring materials.'
+                        ),
+                        React.createElement('p', { className: 'mt-1 text-xs text-blue-600' },
+                            '💡 Tip: Materials in packs will auto-select all items when you select one.'
+                        )
+                    )
+                )
+            )
+        ),
         toast.show && React.createElement(Toast, { message: toast.message, onClose: () => setToast({ show: false, message: '' }) }),
         React.createElement(DeliveryDetailsModal, {
             isOpen: isModalOpen,
