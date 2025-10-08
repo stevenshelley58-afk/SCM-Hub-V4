@@ -4,7 +4,11 @@ import { Table } from '../../components/ui/Table';
 import { Popover } from '../../components/ui/Popover';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { ICONS } from '../../components/ui/Icons';
+import { OnHoldModal } from '../../components/ui/OnHoldModal';
+import { CancelRequestModal } from '../../components/ui/CancelRequestModal';
 import { mockRequestsData } from '../../services/api';
+import { addStatusHistoryEntry } from '../../utils/statusHelpers';
+import { autoUnlockMaterials } from '../../utils/materialLockHelpers';
 // Fix: Corrected import path for types.
 import { MaterialRequest } from '../../types/index';
 
@@ -16,6 +20,8 @@ interface QubePickListViewProps {
 export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
     const [pickListData, setPickListData] = useState<MaterialRequest[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [onHoldModal, setOnHoldModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
+    const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
 
     useEffect(() => {
         const submittedRequests = mockRequestsData.filter(r => r.status === 'Submitted' || r.status === 'Picking') as MaterialRequest[];
@@ -46,6 +52,65 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
             }
         }
         navigate('picking', { request });
+    };
+
+    const handlePutOnHold = (reason: string, expectedResumeDate?: string, notes?: string) => {
+        if (!onHoldModal.request) return;
+        
+        const requestIndex = mockRequestsData.findIndex(r => r.id === onHoldModal.request!.id);
+        if (requestIndex !== -1) {
+            // Update status
+            mockRequestsData[requestIndex].status = 'On Hold';
+            
+            // Add On Hold info
+            mockRequestsData[requestIndex].onHoldInfo = {
+                putOnHoldBy: 'Qube User', // In real app, use actual user
+                putOnHoldAt: new Date().toISOString(),
+                reason,
+                expectedResumeDate
+            };
+            
+            // Add to status history
+            mockRequestsData[requestIndex].statusHistory = addStatusHistoryEntry(
+                mockRequestsData[requestIndex].statusHistory,
+                'On Hold',
+                'Qube User',
+                `${reason}${notes ? ` - ${notes}` : ''}`
+            );
+            
+            console.log(`✋ Request ${onHoldModal.request.id} put On Hold: ${reason}`);
+            
+            // TODO: Send notifications to stakeholders
+        }
+        
+        setOnHoldModal({ isOpen: false, request: null });
+    };
+
+    const handleCancelRequest = (reason: string, notes?: string) => {
+        if (!cancelModal.request) return;
+        
+        const requestIndex = mockRequestsData.findIndex(r => r.id === cancelModal.request!.id);
+        if (requestIndex !== -1) {
+            // Update status
+            mockRequestsData[requestIndex].status = 'Cancelled';
+            
+            // Add to status history
+            mockRequestsData[requestIndex].statusHistory = addStatusHistoryEntry(
+                mockRequestsData[requestIndex].statusHistory,
+                'Cancelled',
+                'Qube User',
+                `${reason}${notes ? ` - ${notes}` : ''}`
+            );
+            
+            // Auto-unlock materials
+            autoUnlockMaterials(cancelModal.request.id, 'Cancelled');
+            
+            console.log(`❌ Request ${cancelModal.request.id} cancelled: ${reason}`);
+            
+            // TODO: Send notifications to stakeholders
+        }
+        
+        setCancelModal({ isOpen: false, request: null });
     };
     
     const handlePrintPickSlip = (request: MaterialRequest) => {
@@ -86,6 +151,8 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
 
         const handlePrint = (e: React.MouseEvent) => { e.stopPropagation(); handlePrintPickSlip(row); handleClose(); };
         const handleSplit = (e: React.MouseEvent) => { e.stopPropagation(); alert('Navigate to Split Request screen (not implemented)'); handleClose(); };
+        const handleOnHold = (e: React.MouseEvent) => { e.stopPropagation(); setOnHoldModal({ isOpen: true, request: row }); handleClose(); };
+        const handleCancel = (e: React.MouseEvent) => { e.stopPropagation(); setCancelModal({ isOpen: true, request: row }); handleClose(); };
 
         return React.createElement(React.Fragment, null,
             React.createElement('button', { onClick: handleOpen, className: "p-1 rounded-full hover:bg-gray-200 text-gray-500" },
@@ -94,7 +161,9 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
             // Fix: Added children to Popover call to satisfy required prop
             React.createElement(Popover, { isOpen, anchorEl, onClose: handleClose, className: "p-1" },
                 React.createElement('button', { onClick: handleSplit, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Split Request'),
-                React.createElement('button', { onClick: handlePrint, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Print Pick Slip')
+                React.createElement('button', { onClick: handlePrint, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Print Pick Slip'),
+                React.createElement('button', { onClick: handleOnHold, className: 'w-full text-left px-3 py-1.5 text-sm text-yellow-700 hover:bg-yellow-50 rounded' }, '⏸️ Put On Hold'),
+                React.createElement('button', { onClick: handleCancel, className: 'w-full text-left px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 rounded' }, '❌ Cancel Request')
             )
         );
     };
@@ -127,6 +196,20 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
             data: dataWithClick,
             columns: tableColumns,
             uniqueId: "id"
+        }),
+        onHoldModal.request && React.createElement(OnHoldModal, {
+            isOpen: onHoldModal.isOpen,
+            request: onHoldModal.request,
+            onClose: () => setOnHoldModal({ isOpen: false, request: null }),
+            onConfirm: handlePutOnHold,
+            currentUserName: 'Qube User'
+        }),
+        cancelModal.request && React.createElement(CancelRequestModal, {
+            isOpen: cancelModal.isOpen,
+            request: cancelModal.request,
+            onClose: () => setCancelModal({ isOpen: false, request: null }),
+            onConfirm: handleCancelRequest,
+            currentUserName: 'Qube User'
         })
     );
 };
