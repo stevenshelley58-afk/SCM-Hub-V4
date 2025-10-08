@@ -29,13 +29,13 @@ const App = () => {
     const [viewParams, setViewParams] = useState<any>(null);
     const [detailPanel, setDetailPanel] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
 
+    // When user changes, reset to their first nav link (unless on hub)
     useEffect(() => {
-        // Only set default view if not on hub
         if (currentView !== 'hub') {
             const defaultView = navLinks[currentUser.id]?.[0]?.view || 'dashboard';
             setCurrentView(defaultView);
         }
-    }, [currentUser, currentView]);
+    }, [currentUser.id]);
 
     const handleUserChange = (user: User) => {
         setCurrentUser(user);
