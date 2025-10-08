@@ -10,16 +10,31 @@ import { mockRequestItems, mockRequestsData, exceptionReasons } from '../../serv
 import { RequestItem, MaterialRequest } from '../../types/index';
 
 interface PickingViewProps {
-    params: { request: MaterialRequest };
+    params: { request: MaterialRequest } | null;
     navigate: (view: string, params?: any) => void;
 }
 
 export const PickingView = ({ params, navigate }: PickingViewProps) => {
-    const { request } = params;
     const [items, setItems] = useState<RequestItem[]>([]);
     const [selection, setSelection] = useState({});
     const [activeModal, setActiveModal] = useState<string | null>(null);
     const [modalData, setModalData] = useState<RequestItem | null>(null);
+
+    // Safety check: if no params or request, redirect back to pick list
+    useEffect(() => {
+        if (!params || !params.request) {
+            navigate('picklist');
+        }
+    }, [params, navigate]);
+
+    // Return early if no request
+    if (!params || !params.request) {
+        return React.createElement('div', { className: 'p-8 text-center' },
+            React.createElement('p', null, 'Redirecting to pick list...')
+        );
+    }
+
+    const { request } = params;
 
     useEffect(() => {
         setItems(JSON.parse(JSON.stringify(mockRequestItems[request.id as keyof typeof mockRequestItems] || [])));
