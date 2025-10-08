@@ -1,0 +1,5 @@
+{
+  "name": "MRF Interactive Prototype",
+  "description": "A high-fidelity, interactive prototype of the Materials Request & Fulfillment (MRF) application, featuring a user simulation mode to demonstrate role-based UI changes.",
+  "requestFramePermissions": []
+}
