@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { User } from '../types/index';
-import './hub-styles.css';
+import '../hub-styles.css';
 
 interface OperationsHubProps {
   currentUser: User;

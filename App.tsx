@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import './hub-styles.css';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { OperationsHub } from './components/OperationsHub';
