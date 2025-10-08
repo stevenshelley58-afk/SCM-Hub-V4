@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Table } from '../../components/ui/Table';
 import { DonutChart } from '../../components/ui/DonutChart';
 import { StatusPill } from '../../components/ui/StatusPill';
@@ -13,6 +13,15 @@ interface MaterialRequestsViewProps {
 }
 
 export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewProps) => {
+    const [refreshKey, setRefreshKey] = useState(0);
+    
+    // Auto-refresh every 2 seconds to pick up new requests
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRefreshKey(prev => prev + 1);
+        }, 2000);
+        return () => clearInterval(interval);
+    }, []);
     const statusData = [
         { label: 'Submitted', value: 6, color: '#0891b2' },
         { label: 'Picking', value: 3, color: '#f59e0b' },
@@ -37,7 +46,7 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
         }
     ], [openDetailPanel]);
     
-    const dataWithClick = useMemo(() => mockRequestsData.map(req => ({ ...req, onClick: openDetailPanel })), [openDetailPanel]);
+    const dataWithClick = useMemo(() => mockRequestsData.map(req => ({ ...req, onClick: openDetailPanel })), [openDetailPanel, refreshKey]);
 
     return React.createElement('div', { className: 'space-y-6' },
         React.createElement('div', { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" },

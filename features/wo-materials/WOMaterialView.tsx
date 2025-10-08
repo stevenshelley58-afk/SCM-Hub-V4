@@ -7,7 +7,7 @@ import { DeliveryDetailsModal, LockMaterialModal } from '../../components/ui/Mod
 import { Popover } from '../../components/ui/Popover';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { ICONS } from '../../components/ui/Icons';
-import { masterGridData, mockTransactionalData, mockMaterialLocks, mockRequestsData } from '../../services/api';
+import { masterGridData, mockTransactionalData, mockMaterialLocks, mockRequestsData, mockRequestItems } from '../../services/api';
 // Fix: Corrected import path for types.
 import { User, WOMaterial } from '../../types/index';
 
@@ -43,9 +43,44 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
 
     const handleSubmit = (formData: any) => {
         const newMrfId = `MRF-${Math.floor(1200 + Math.random() * 100)}`;
-        Object.keys(selected).forEach(pKey => {
-            mockTransactionalData[pKey] = { mrfId: newMrfId, status: 'In Transit' };
+        const selectedItems = Object.keys(selected);
+        
+        // Update transactional data (for WO Materials status column)
+        selectedItems.forEach(pKey => {
+            mockTransactionalData[pKey] = { mrfId: newMrfId, status: 'Submitted' };
         });
+        
+        // Add new request to mockRequestsData (for Qube Pick List)
+        const selectedMaterials = masterGridData.filter(m => selected[m.pKey]);
+        const workOrders = [...new Set(selectedMaterials.map(m => m.workOrder))].join(', ');
+        
+        const newRequest = {
+            id: newMrfId,
+            status: 'Submitted' as const,
+            priority: formData.Priority || 'P4',
+            items: selectedItems.length,
+            workOrders: workOrders,
+            createdDate: new Date().toLocaleDateString('en-US'),
+            RequiredByTimestamp: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            MC_Priority_Flag: formData.Priority === 'P1',
+            DeliveryLocation: formData.DeliverTo || 'Unknown',
+            requestorName: currentUser.name,
+            acPriority: null
+        };
+        
+        mockRequestsData.unshift(newRequest); // Add to beginning of array
+        
+        // Add line items for the request (for picking view)
+        mockRequestItems[newMrfId as keyof typeof mockRequestItems] = selectedMaterials.map((m, idx) => ({
+            pKey: `LI-${newMrfId}-${idx}`,
+            status: 'Open' as const,
+            qtyRequested: m.workOrderQty,
+            materialDescription: m.materialDescription,
+            itemNumber: m.jdeItemNo,
+            storageLocation: m.storageLocation,
+            packNumber: m.packNumber
+        }));
+        
         setSelected({});
         setModalOpen(false);
         setToast({ show: true, message: `Success! Your request ${newMrfId} has been submitted.` });

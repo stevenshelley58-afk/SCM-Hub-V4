@@ -15,6 +15,7 @@ interface QubePickListViewProps {
 
 export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
     const [pickListData, setPickListData] = useState<MaterialRequest[]>([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         const submittedRequests = mockRequestsData.filter(r => r.status === 'Submitted' || r.status === 'Picking') as MaterialRequest[];
@@ -27,6 +28,14 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
             return new Date(a.RequiredByTimestamp).getTime() - new Date(b.RequiredByTimestamp).getTime();
         });
         setPickListData(submittedRequests);
+    }, [refreshKey]);
+    
+    // Auto-refresh every 2 seconds to pick up new requests
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRefreshKey(prev => prev + 1);
+        }, 2000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleRowClick = (request: MaterialRequest) => {
