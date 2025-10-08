@@ -108,7 +108,8 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'material-requests', label: 'Material Requests', icon: 'RocketLaunchIcon' }
     ],
     qube: [
-        { view: 'picklist', label: 'Qube Pick List', icon: 'QueueListIcon' }
+        { view: 'picklist', label: 'Qube Pick List', icon: 'QueueListIcon' },
+        { view: 'onhold', label: 'On Hold', icon: 'PauseCircleIcon' }
     ],
     mc: [{ view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' }]
 };

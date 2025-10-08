@@ -9,6 +9,7 @@ import { WOMaterialView } from './features/wo-materials/WOMaterialView';
 import { MaterialRequestView } from './features/material-requests/MaterialRequestView';
 import { QubePickListView } from './features/qube-fulfillment/QubePickListView';
 import { PickingView } from './features/qube-fulfillment/PickingView';
+import { OnHoldView } from './features/qube-fulfillment/OnHoldView';
 import { ACDashboardView } from './features/ac-dashboard/ACDashboardView';
 import { AdminControlPanelView } from './features/admin/AdminControlPanelView';
 import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView';
@@ -65,6 +66,10 @@ const App = () => {
         'picklist': {
             title: 'Warehouse Pick List',
             component: () => React.createElement(QubePickListView, { openDetailPanel, navigate })
+        },
+        'onhold': {
+            title: 'On Hold Requests',
+            component: () => React.createElement(OnHoldView, { navigate })
         },
         'picking': {
             title: 'Picking In Progress',
