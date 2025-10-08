@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
+import { OperationsHub } from './components/OperationsHub';
 import { RequestDetailPanel } from './features/material-requests/components/RequestDetailPanel';
 import { WOMaterialView } from './features/wo-materials/WOMaterialView';
 import { MaterialRequestView } from './features/material-requests/MaterialRequestView';
@@ -23,14 +24,17 @@ const PlaceholderView = ({ user }: { user: User }) => React.createElement('div',
 
 const App = () => {
     const [currentUser, setCurrentUser] = useState<User>(users.requestor);
-    const [currentView, setCurrentView] = useState('wo-materials');
+    const [currentView, setCurrentView] = useState('hub');
     const [viewParams, setViewParams] = useState<any>(null);
     const [detailPanel, setDetailPanel] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
 
     useEffect(() => {
-        const defaultView = navLinks[currentUser.id]?.[0]?.view || 'dashboard';
-        setCurrentView(defaultView);
-    }, [currentUser]);
+        // Only set default view if not on hub
+        if (currentView !== 'hub') {
+            const defaultView = navLinks[currentUser.id]?.[0]?.view || 'dashboard';
+            setCurrentView(defaultView);
+        }
+    }, [currentUser, currentView]);
 
     const handleUserChange = (user: User) => {
         setCurrentUser(user);
@@ -45,6 +49,10 @@ const App = () => {
     const closeDetailPanel = () => setDetailPanel({ isOpen: false, request: null });
 
     const viewMap: { [key: string]: { title: string; component: React.ComponentType<any> } } = {
+        'hub': {
+            title: 'Operations Hub',
+            component: () => React.createElement(OperationsHub, { currentUser, onNavigate: navigate, onUserChange: handleUserChange })
+        },
         'wo-materials': {
             title: 'Work Order Materials',
             component: () => React.createElement(WOMaterialView, { openDetailPanel, currentUser, navigate })
@@ -77,6 +85,14 @@ const App = () => {
 
     const ActiveView = viewMap[currentView]?.component || (() => React.createElement(PlaceholderView, { user: currentUser }));
     const headerTitle = viewMap[currentView]?.title || 'Dashboard';
+
+    // For hub view, don't show sidebar and header
+    if (currentView === 'hub') {
+        return React.createElement('div', { className: "min-h-screen bg-gray-50 font-sans" },
+            React.createElement(ActiveView, null),
+            React.createElement(RequestDetailPanel, { ...detailPanel, onClose: closeDetailPanel, currentUser: currentUser })
+        );
+    }
 
     return React.createElement('div', { className: "flex h-screen bg-gray-50 font-sans" },
         React.createElement(Sidebar, { currentUser: currentUser, onUserChange: handleUserChange, currentView, onNavigate: navigate, navLinks }),
