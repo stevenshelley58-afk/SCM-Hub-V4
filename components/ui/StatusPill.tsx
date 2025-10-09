@@ -22,6 +22,8 @@ export const StatusPill = ({ status, lockInfo }: StatusPillProps) => {
         'Ready for Collection': 'bg-purple-100 text-purple-800',
         'Staged': 'bg-purple-100 text-purple-800',
         'Submitted': 'bg-cyan-100 text-cyan-800',
+        'Pending Approval': 'bg-yellow-100 text-yellow-800',
+        'Approved': 'bg-emerald-100 text-emerald-800',
         'On Hold': 'bg-gray-300 text-gray-900',
         'Cancelled': 'bg-gray-400 text-gray-700',
         'Open': 'bg-gray-200 text-gray-700',
@@ -35,6 +37,8 @@ export const StatusPill = ({ status, lockInfo }: StatusPillProps) => {
         'Partial Pick - Closed': React.createElement('span', { className: 'mr-1.5' }, '🔴'),
         'Short': React.createElement('span', { className: 'mr-1.5' }, '⚠️'),
         'Staged': React.createElement('span', { className: 'mr-1.5' }, '✅'),
+        'Pending Approval': React.createElement('span', { className: 'mr-1.5' }, '⏳'),
+        'Approved': React.createElement('span', { className: 'mr-1.5' }, '✔️'),
         'On Hold': React.createElement('span', { className: 'mr-1.5' }, '⏸️'),
         'Cancelled': React.createElement('span', { className: 'mr-1.5' }, '❌'),
         'Locked': React.createElement(ICONS.LockClosedIcon, { className: 'h-4 w-4 mr-1.5' })

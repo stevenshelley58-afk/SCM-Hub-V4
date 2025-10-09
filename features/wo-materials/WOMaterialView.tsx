@@ -129,7 +129,7 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         
         const newRequest = {
             id: newMrfId,
-            status: 'Submitted' as const,
+            status: (formData.Priority === 'P1' ? 'Pending Approval' : 'Submitted') as const,
             priority: formData.Priority || 'P4',
             items: selectedItems.length,
             workOrders: workOrders,

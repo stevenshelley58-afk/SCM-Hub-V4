@@ -13,6 +13,7 @@ import { OnHoldView } from './features/qube-fulfillment/OnHoldView';
 import { ACDashboardView } from './features/ac-dashboard/ACDashboardView';
 import { AdminControlPanelView } from './features/admin/AdminControlPanelView';
 import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView';
+import { P1ApprovalView } from './features/admin/P1ApprovalView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
@@ -78,6 +79,10 @@ const App = () => {
         'ac-scope-command': {
             title: 'Scope Command: Welding',
             component: () => React.createElement(ACDashboardView, { openDetailPanel, navigate })
+        },
+        'p1-approval': {
+            title: 'P1 Approval Queue',
+            component: () => React.createElement(P1ApprovalView, { navigate })
         },
         'control-panel': {
             title: 'Control Panel',

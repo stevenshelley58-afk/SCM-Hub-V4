@@ -7,7 +7,7 @@ export interface User {
 
 export interface MaterialRequest {
     id: string;
-    status: 'Submitted' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
+    status: 'Submitted' | 'Pending Approval' | 'Approved' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
     priority: 'P1' | 'P2' | 'P3' | 'P4';
     items: number;
     workOrders: string;
@@ -26,6 +26,13 @@ export interface MaterialRequest {
         putOnHoldAt: string;
         reason: string;
         expectedResumeDate?: string;
+    };
+    approvalInfo?: {
+        approvedBy?: string;
+        approvedAt?: string;
+        rejectedBy?: string;
+        rejectedAt?: string;
+        notes?: string;
     };
 }
 
