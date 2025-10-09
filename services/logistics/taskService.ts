@@ -5,6 +5,8 @@
 
 import { supabase } from '../supabaseClient';
 import { logisticsEventPublisher } from '../integrations/logisticsEventPublisher';
+import { slaEngine } from '../sla/slaEngine';
+import { notificationService } from '../notifications/notificationService';
 import type {
     LogisticsTask,
     LogisticsTaskType,
@@ -64,11 +66,14 @@ class TaskService {
      */
     async createTask(input: CreateTaskInput): Promise<LogisticsTask> {
         try {
-            // Calculate SLA target based on priority and requested date
-            const sla_target_at = this.calculateSLATarget(
-                input.requested_date,
-                input.priority
-            );
+            // Calculate SLA target using SLA engine
+            const slaResult = slaEngine.calculateSLATarget({
+                type: input.type,
+                priority: input.priority,
+                created_at: new Date().toISOString(),
+                requested_date: input.requested_date,
+            });
+            const sla_target_at = slaResult.sla_target_at;
 
             const { data, error } = await supabase
                 .from('logistics_tasks')
@@ -317,6 +322,11 @@ class TaskService {
                     task.vehicle,
                     { id: 'system', name: 'MLC System' }
                 );
+            }
+
+            // Send notifications
+            if (task && task.driver) {
+                await notificationService.notifyTaskAssigned(task, task.driver);
             }
 
             return data;

@@ -188,6 +188,12 @@ class PODService {
                 await logisticsEventPublisher.publishTaskDelivered(task, data);
             }
 
+            // Send completion notification
+            if (task) {
+                const { notificationService } = await import('../notifications/notificationService');
+                await notificationService.notifyTaskCompleted(task, data);
+            }
+
             // Check for warnings and notify if needed
             const warnings = this.validatePOD(data);
             if (warnings.length > 0) {
