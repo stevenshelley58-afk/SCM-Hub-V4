@@ -13,6 +13,7 @@ import { OnHoldView } from './features/qube-fulfillment/OnHoldView';
 import { ACDashboardView } from './features/ac-dashboard/ACDashboardView';
 import { AdminControlPanelView } from './features/admin/AdminControlPanelView';
 import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView';
+import { IntegrationsView } from './features/integrations/IntegrationsView';
 import { P1ApprovalView } from './features/admin/P1ApprovalView';
 import { PriorityQueueView } from './features/admin/PriorityQueueView';
 import { WorkflowDiagramView } from './features/admin/WorkflowDiagramView';
@@ -101,6 +102,10 @@ const App = () => {
         'exception-dashboard': {
             title: 'Partial Picks Dashboard',
             component: () => React.createElement(ExceptionDashboardView, {})
+        },
+        'integrations': {
+            title: 'Integrations & Notifications',
+            component: () => React.createElement(IntegrationsView, {})
         }
     };
 
