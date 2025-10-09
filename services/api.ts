@@ -1,14 +1,146 @@
 
 
 // Fix: Corrected import path for types.
-import { User, MaterialRequest } from '../types/index';
+import { User, MaterialRequest, DeliveryLocation } from '../types/index';
 
 // --- DATA STORE ---
-export const users: { [key: string]: User } = {
+export const users: { [key: string]: User} = {
     requestor: { id: 'requestor', name: 'Jane Doe', role: 'Requestor', phone: '555-123-4567' },
     ac: { id: 'ac', name: 'Steve', role: 'Area Coordinator' },
     qube: { id: 'qube', name: 'JJ', role: 'Qube User' },
     mc: { id: 'mc', name: 'Corey', role: 'Material Coordinator' }
+};
+
+// Helper function to generate full address
+const generateFullAddress = (building: string, floor?: string, room?: string): string => {
+    let address = building;
+    if (floor) address += `, ${floor}`;
+    if (room) address += `, Room ${room}`;
+    return address;
+};
+
+// Delivery Locations
+export const mockLocations: DeliveryLocation[] = [
+    {
+        id: 'LOC001',
+        building: 'Admin Building',
+        floor: 'Ground Floor',
+        room: '101',
+        fullAddress: 'Admin Building, Ground Floor, Room 101',
+        contactPerson: 'John Smith',
+        contactPhone: '555-0101',
+        deliveryInstructions: 'Reception desk, sign in required',
+        isActive: true
+    },
+    {
+        id: 'LOC002',
+        building: 'Workshop A',
+        floor: 'Level 1',
+        room: 'Bay 3',
+        fullAddress: 'Workshop A, Level 1, Room Bay 3',
+        contactPerson: 'Sarah Johnson',
+        contactPhone: '555-0102',
+        deliveryInstructions: 'Enter through loading dock, ask for supervisor',
+        isActive: true
+    },
+    {
+        id: 'LOC003',
+        building: 'Warehouse 1',
+        floor: undefined,
+        room: 'Section A-3',
+        fullAddress: 'Warehouse 1, Room Section A-3',
+        contactPerson: 'Mike Davis',
+        contactPhone: '555-0103',
+        isActive: true
+    },
+    {
+        id: 'LOC004',
+        building: 'Engineering Office',
+        floor: 'Level 2',
+        room: '205',
+        fullAddress: 'Engineering Office, Level 2, Room 205',
+        contactPerson: 'Emily Chen',
+        contactPhone: '555-0104',
+        deliveryInstructions: 'Use service elevator, card access required',
+        isActive: true
+    },
+    {
+        id: 'LOC005',
+        building: 'Maintenance Yard',
+        floor: undefined,
+        room: 'Tool Crib',
+        fullAddress: 'Maintenance Yard, Room Tool Crib',
+        contactPerson: 'Tom Wilson',
+        contactPhone: '555-0105',
+        isActive: true
+    },
+    {
+        id: 'LOC006',
+        building: 'Production Hall B',
+        floor: 'Ground Floor',
+        room: 'Station 12',
+        fullAddress: 'Production Hall B, Ground Floor, Room Station 12',
+        contactPerson: 'Lisa Martinez',
+        contactPhone: '555-0106',
+        deliveryInstructions: 'Deliver during shift change (7am-8am or 3pm-4pm)',
+        isActive: true
+    },
+    {
+        id: 'LOC007',
+        building: 'Old Workshop',
+        floor: undefined,
+        room: undefined,
+        fullAddress: 'Old Workshop',
+        contactPerson: undefined,
+        contactPhone: undefined,
+        deliveryInstructions: 'No longer in use',
+        isActive: false
+    }
+];
+
+// Location CRUD functions
+export const addLocation = (locationData: Partial<DeliveryLocation>): DeliveryLocation => {
+    const newLocation: DeliveryLocation = {
+        id: `LOC${String(mockLocations.length + 1).padStart(3, '0')}`,
+        building: locationData.building || '',
+        floor: locationData.floor,
+        room: locationData.room,
+        fullAddress: generateFullAddress(
+            locationData.building || '',
+            locationData.floor,
+            locationData.room
+        ),
+        contactPerson: locationData.contactPerson,
+        contactPhone: locationData.contactPhone,
+        deliveryInstructions: locationData.deliveryInstructions,
+        isActive: locationData.isActive !== false
+    };
+    mockLocations.push(newLocation);
+    return newLocation;
+};
+
+export const updateLocation = (id: string, updates: Partial<DeliveryLocation>): DeliveryLocation => {
+    const index = mockLocations.findIndex(loc => loc.id === id);
+    if (index !== -1) {
+        mockLocations[index] = {
+            ...mockLocations[index],
+            ...updates,
+            fullAddress: generateFullAddress(
+                updates.building || mockLocations[index].building,
+                updates.floor !== undefined ? updates.floor : mockLocations[index].floor,
+                updates.room !== undefined ? updates.room : mockLocations[index].room
+            )
+        };
+        return mockLocations[index];
+    }
+    throw new Error('Location not found');
+};
+
+export const deleteLocation = (id: string): void => {
+    const index = mockLocations.findIndex(loc => loc.id === id);
+    if (index !== -1) {
+        mockLocations.splice(index, 1);
+    }
 };
 
 // --- DATA GENERATION (Simulating large DB table) ---
@@ -115,6 +247,7 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'p1-approval', label: 'P1 Approval Queue', icon: 'FireIcon' },
         { view: 'priority-queue', label: 'Priority Queue', icon: 'QueueListIcon' },
         { view: 'workflow-diagram', label: 'Workflow Diagram', icon: 'DocumentTextIcon' },
+        { view: 'location-management', label: 'Delivery Locations', icon: 'MapPinIcon' },
         { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' }
     ]
 };

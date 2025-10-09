@@ -16,6 +16,7 @@ import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView'
 import { P1ApprovalView } from './features/admin/P1ApprovalView';
 import { PriorityQueueView } from './features/admin/PriorityQueueView';
 import { WorkflowDiagramView } from './features/admin/WorkflowDiagramView';
+import { LocationManagementView } from './features/admin/LocationManagementView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
@@ -93,6 +94,10 @@ const App = () => {
         'workflow-diagram': {
             title: 'Workflow Diagram',
             component: () => React.createElement(WorkflowDiagramView, {})
+        },
+        'location-management': {
+            title: 'Delivery Locations',
+            component: () => React.createElement(LocationManagementView, { navigate })
         },
         'control-panel': {
             title: 'Control Panel',
