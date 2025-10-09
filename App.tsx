@@ -22,6 +22,7 @@ import { KeyboardShortcutsModal } from './components/ui/KeyboardShortcutsModal';
 import { LogisticsDispatcherView } from './features/logistics/LogisticsDispatcherView';
 import { LogisticsDriverView } from './features/logistics/LogisticsDriverView';
 import { LogisticsConfigView } from './features/logistics/LogisticsConfigView';
+import { LogisticsReportsView } from './features/logistics/LogisticsReportsView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
@@ -156,6 +157,10 @@ const App = () => {
         'logistics-config': {
             title: 'Logistics Configuration',
             component: () => React.createElement(LogisticsConfigView, {})
+        },
+        'logistics-reports': {
+            title: 'Reports & Analytics',
+            component: () => React.createElement(LogisticsReportsView, {})
         }
     };
 
