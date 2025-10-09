@@ -6,6 +6,7 @@ import { StatusPill } from '../../components/ui/StatusPill';
 import { ICONS } from '../../components/ui/Icons';
 import { OnHoldModal } from '../../components/ui/OnHoldModal';
 import { CancelRequestModal } from '../../components/ui/CancelRequestModal';
+import { SplitMRFModal } from '../../components/ui/SplitMRFModal';
 import { mockRequestsData } from '../../services/api';
 import { addStatusHistoryEntry } from '../../utils/statusHelpers';
 import { autoUnlockMaterials } from '../../utils/materialLockHelpers';
@@ -22,6 +23,7 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
     const [refreshKey, setRefreshKey] = useState(0);
     const [onHoldModal, setOnHoldModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
     const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
+    const [splitModal, setSplitModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
 
     useEffect(() => {
         const submittedRequests = mockRequestsData.filter(r => r.status === 'Submitted' || r.status === 'Picking') as MaterialRequest[];
@@ -112,6 +114,69 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
         
         setCancelModal({ isOpen: false, request: null });
     };
+
+    const handleSplitConfirm = (splits: { splitA: string[]; splitB: string[] }, reason: string) => {
+        if (!splitModal.request) return;
+        
+        const originalRequest = splitModal.request;
+        const originalIndex = mockRequestsData.findIndex(r => r.id === originalRequest.id);
+        
+        if (originalIndex !== -1) {
+            // Generate new MRF IDs
+            const mrfIdA = `${originalRequest.id}-A`;
+            const mrfIdB = `${originalRequest.id}-B`;
+            
+            // Cancel original request
+            mockRequestsData[originalIndex].status = 'Cancelled';
+            mockRequestsData[originalIndex].statusHistory = addStatusHistoryEntry(
+                mockRequestsData[originalIndex].statusHistory,
+                'Cancelled',
+                'Qube User',
+                `Split into ${mrfIdA} and ${mrfIdB}: ${reason}`
+            );
+            
+            // Auto-unlock original materials
+            autoUnlockMaterials(originalRequest.id, 'Cancelled');
+            
+            // Create Split A
+            const requestA = {
+                ...originalRequest,
+                id: mrfIdA,
+                status: 'Submitted' as const,
+                items: splits.splitA.length,
+                createdDate: new Date().toLocaleDateString('en-US'),
+                statusHistory: [{
+                    status: 'Submitted',
+                    timestamp: new Date().toISOString(),
+                    changedBy: 'Qube User',
+                    reason: `Split from ${originalRequest.id} (Split A)`
+                }]
+            };
+            
+            // Create Split B
+            const requestB = {
+                ...originalRequest,
+                id: mrfIdB,
+                status: 'Submitted' as const,
+                items: splits.splitB.length,
+                createdDate: new Date().toLocaleDateString('en-US'),
+                statusHistory: [{
+                    status: 'Submitted',
+                    timestamp: new Date().toISOString(),
+                    changedBy: 'Qube User',
+                    reason: `Split from ${originalRequest.id} (Split B)`
+                }]
+            };
+            
+            // Add both new requests
+            mockRequestsData.unshift(requestA, requestB);
+            
+            console.log(`✂️ Split ${originalRequest.id} into ${mrfIdA} (${splits.splitA.length} items) and ${mrfIdB} (${splits.splitB.length} items)`);
+            console.log(`Reason: ${reason}`);
+        }
+        
+        setSplitModal({ isOpen: false, request: null });
+    };
     
     const handlePrintPickSlip = (request: MaterialRequest) => {
         const printWindow = window.open('', '_blank');
@@ -150,7 +215,7 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
         const handleClose = () => { setAnchorEl(null); setIsOpen(false); };
 
         const handlePrint = (e: React.MouseEvent) => { e.stopPropagation(); handlePrintPickSlip(row); handleClose(); };
-        const handleSplit = (e: React.MouseEvent) => { e.stopPropagation(); alert('Navigate to Split Request screen (not implemented)'); handleClose(); };
+        const handleSplit = (e: React.MouseEvent) => { e.stopPropagation(); setSplitModal({ isOpen: true, request: row }); handleClose(); };
         const handleOnHold = (e: React.MouseEvent) => { e.stopPropagation(); setOnHoldModal({ isOpen: true, request: row }); handleClose(); };
         const handleCancel = (e: React.MouseEvent) => { e.stopPropagation(); setCancelModal({ isOpen: true, request: row }); handleClose(); };
 
@@ -209,6 +274,13 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
             request: cancelModal.request,
             onClose: () => setCancelModal({ isOpen: false, request: null }),
             onConfirm: handleCancelRequest,
+            currentUserName: 'Qube User'
+        }),
+        splitModal.request && React.createElement(SplitMRFModal, {
+            isOpen: splitModal.isOpen,
+            request: splitModal.request,
+            onClose: () => setSplitModal({ isOpen: false, request: null }),
+            onConfirm: handleSplitConfirm,
             currentUserName: 'Qube User'
         })
     );
