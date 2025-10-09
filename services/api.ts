@@ -5,10 +5,10 @@ import { User, MaterialRequest, DeliveryLocation } from '../types/index';
 
 // --- DATA STORE ---
 export const users: { [key: string]: User} = {
-    requestor: { id: 'requestor', name: 'Jane Doe', role: 'Requestor', phone: '555-123-4567' },
-    ac: { id: 'ac', name: 'Steve', role: 'Area Coordinator' },
-    qube: { id: 'qube', name: 'JJ', role: 'Qube User' },
-    mc: { id: 'mc', name: 'Corey', role: 'Material Coordinator' }
+    requestor: { id: 'requestor', name: 'Requestor', role: 'Requestor', phone: '555-123-4567' },
+    ac: { id: 'ac', name: 'Area Coordinator', role: 'Area Coordinator' },
+    qube: { id: 'qube', name: 'Qube User', role: 'Qube User' },
+    mc: { id: 'mc', name: 'Material Coordinator', role: 'Material Coordinator' }
 };
 
 // Helper function to generate full address

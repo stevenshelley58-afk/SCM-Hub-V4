@@ -30,10 +30,10 @@ const site = {
 };
 
 const hubUsers = [
-  { id: "requestor", display_name: "Jane Doe", role: "Requestor" },
-  { id: "ac", display_name: "Steve", role: "Area Coordinator" },
-  { id: "qube", display_name: "JJ", role: "Qube User" },
-  { id: "mc", display_name: "Corey", role: "Material Coordinator" }
+  { id: "requestor", role: "Requestor" },
+  { id: "ac", role: "Area Coordinator" },
+  { id: "qube", role: "Qube User" },
+  { id: "mc", role: "Material Coordinator" }
 ];
 
 const icons = {
@@ -125,7 +125,6 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
   };
 
   const filteredUsers = hubUsers.filter(user =>
-    user.display_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -229,8 +228,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
                 onClick: () => setSelectedUser(user)
               },
                 React.createElement('div', { className: "user-info" },
-                  React.createElement('p', { className: "user-name" }, user.display_name),
-                  React.createElement('span', { className: "user-role" }, user.role)
+                  React.createElement('p', { className: "user-name" }, user.role)
                 )
               )
             )

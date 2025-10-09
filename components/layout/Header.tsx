@@ -20,8 +20,7 @@ export const Header = ({ title, user, currentView }: HeaderProps) => {
             React.createElement('div', { className: "flex items-center space-x-3" },
                 React.createElement(ICONS.UserCircleIcon, { className: "h-8 w-8 text-gray-600" }),
                 React.createElement('div', { className: "text-sm text-left" },
-                    React.createElement('div', { className: "font-medium text-gray-800" }, user.name),
-                    React.createElement('div', { className: "text-gray-500" }, user.role)
+                    React.createElement('div', { className: "font-medium text-gray-800" }, user.role)
                 ),
                 React.createElement(ICONS.ChevronDownIcon, { className: "h-5 w-5 text-gray-400" })
             )

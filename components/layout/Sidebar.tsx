@@ -55,7 +55,7 @@ export const Sidebar = ({ currentUser, onUserChange, currentView, onNavigate, na
                     href: "#", key: user.id,
                     onClick: (e) => { e.preventDefault(); onUserChange(user); setDropdownOpen(false); },
                     className: "block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                 }, `Sign in as ${user.role} (${user.name})`))
+                 }, `Sign in as ${user.role}`))
             ),
             React.createElement('button', { onClick: () => setDropdownOpen(!isDropdownOpen), className: "w-full text-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200" }, 'Switch User')
         )
