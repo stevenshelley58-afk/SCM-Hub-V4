@@ -26,7 +26,7 @@ export interface SyncConflict {
 let syncHistory: SyncStatus[] = [];
 let syncConflicts: SyncConflict[] = [];
 let lastSyncTime: string | null = null;
-let isSync Running = false;
+let isSyncRunning = false;
 
 // Perform SharePoint sync
 export const performSharePointSync = async (): Promise<SyncStatus> => {

@@ -13,6 +13,7 @@ import { OnHoldView } from './features/qube-fulfillment/OnHoldView';
 import { ACDashboardView } from './features/ac-dashboard/ACDashboardView';
 import { AdminControlPanelView } from './features/admin/AdminControlPanelView';
 import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView';
+import { IntegrationsView } from './features/integrations/IntegrationsView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
@@ -86,6 +87,10 @@ const App = () => {
         'exception-dashboard': {
             title: 'Partial Picks Dashboard',
             component: () => React.createElement(ExceptionDashboardView, {})
+        },
+        'integrations': {
+            title: 'Integrations & Notifications',
+            component: () => React.createElement(IntegrationsView, {})
         }
     };
 

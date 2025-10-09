@@ -111,5 +111,8 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'picklist', label: 'Qube Pick List', icon: 'QueueListIcon' },
         { view: 'onhold', label: 'On Hold', icon: 'PauseCircleIcon' }
     ],
-    mc: [{ view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' }]
+    mc: [
+        { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' },
+        { view: 'integrations', label: 'Integrations', icon: 'CloudIcon' }
+    ]
 };
