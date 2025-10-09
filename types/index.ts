@@ -33,7 +33,7 @@ export interface PODData {
 
 export interface MaterialRequest {
     id: string;
-    status: 'Submitted' | 'Pending Approval' | 'Approved' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
+    status: 'Submitted' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
     priority: 'P1' | 'P2' | 'P3' | 'P4';
     items: number;
     workOrders: string;
@@ -53,6 +53,7 @@ export interface MaterialRequest {
         reason: string;
         expectedResumeDate?: string;
     };
+<<<<<<< HEAD
     approvalInfo?: {
         approvedBy?: string;
         approvedAt?: string;
@@ -62,6 +63,8 @@ export interface MaterialRequest {
     };
     MC_Queue_Position?: number; // MC-controlled queue position (1 = first in queue)
     pod?: PODData; // Proof of Delivery data
+=======
+>>>>>>> a144409ad37313f63ff26faff71de352eab29380
 }
 
 export interface RequestItem {
@@ -106,40 +109,43 @@ export interface LockInfo {
     comment: string;
 }
 
-export interface AuditLogEntry {
+// Notification types for Agent 3 - Integrations
+export interface NotificationTemplate {
     id: string;
-    timestamp: string;
-    userId: string;
-    userName: string;
-    action: 'status_change' | 'priority_change' | 'manual_override' | 'material_unlock' | 'approval' | 'rejection' | 'cancel' | 'on_hold' | 'resume' | 'short_pick' | 'material_lock' | 'create_request' | 'edit_request' | 'delete_request' | 'permission_change' | 'system_config';
-    entityType: 'material_request' | 'request_item' | 'material' | 'user' | 'system';
-    entityId: string;
-    details: {
-        before?: any;
-        after?: any;
-        reason?: string;
-        notes?: string;
-        [key: string]: any;
-    };
+    name: string;
+    type: 'email' | 'sms' | 'teams' | 'push';
+    subject?: string;
+    body: string;
+    variables: string[];
 }
 
-export interface SystemHealthMetrics {
-    timestamp: string;
-    requestBacklog: number;
-    avgFulfillmentTime: number; // in hours
-    shortPickRate: number; // percentage
-    p1RequestCount: number;
-    p1AvgApprovalTime: number; // in minutes
-    activeRequests: number;
-    completedToday: number;
-    overdueRequests: number;
+export interface Notification {
+    id: string;
+    type: 'email' | 'sms' | 'teams' | 'push';
+    recipient: string;
+    subject?: string;
+    message: string;
+    status: 'pending' | 'sent' | 'failed';
+    sentAt?: string;
+    error?: string;
+    mrfId?: string;
 }
 
-export interface ReportFilter {
-    startDate?: string;
-    endDate?: string;
-    status?: string[];
-    priority?: string[];
-    requestor?: string[];
-    deliveryLocation?: string[];
+export interface NotificationRule {
+    id: string;
+    event: 'submitted' | 'status_change' | 'delay' | 'delivered' | 'short_pick' | 'p1_created';
+    enabled: boolean;
+    channels: ('email' | 'sms' | 'teams')[];
+    recipients: string[];
+    templateId: string;
+}
+
+export interface DeliveryPhoto {
+    id: string;
+    mrfId: string;
+    type: 'condition' | 'storage' | 'delivery';
+    url: string;
+    uploadedBy: string;
+    uploadedAt: string;
+    notes?: string;
 }

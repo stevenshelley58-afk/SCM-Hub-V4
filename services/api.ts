@@ -248,6 +248,7 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'priority-queue', label: 'Priority Queue', icon: 'QueueListIcon' },
         { view: 'workflow-diagram', label: 'Workflow Diagram', icon: 'DocumentTextIcon' },
         { view: 'location-management', label: 'Delivery Locations', icon: 'MapPinIcon' },
-        { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' }
+        { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' },
+        { view: 'integrations', label: 'Integrations', icon: 'CloudIcon' }
     ]
 };
