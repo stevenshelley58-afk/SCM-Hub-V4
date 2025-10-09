@@ -1,0 +1,507 @@
+/* Mobile Responsive Styles for SCM Hub */
+
+/* ======================
+   MOBILE BREAKPOINTS
+   ====================== */
+/* 
+  Mobile: < 640px (sm)
+  Tablet: 640px - 1024px (sm to lg)
+  Desktop: > 1024px
+*/
+
+/* ======================
+   GLOBAL MOBILE FIXES
+   ====================== */
+
+/* Ensure viewport is properly set */
+@media (max-width: 768px) {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  body {
+    min-width: 320px; /* Prevent layout breaking on very small screens */
+  }
+
+  /* Larger touch targets for mobile (minimum 44x44px) */
+  button,
+  input[type="checkbox"],
+  input[type="radio"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Better button spacing */
+  button {
+    padding: 12px 20px !important;
+  }
+
+  /* Better input spacing */
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  input[type="number"],
+  select,
+  textarea {
+    padding: 12px 16px !important;
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* ======================
+   TABLE MOBILE FIXES
+   ====================== */
+
+@media (max-width: 1024px) {
+  /* Make tables horizontally scrollable */
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  /* Reduce padding in table cells */
+  table th,
+  table td {
+    padding: 8px !important;
+    font-size: 0.875rem !important;
+  }
+
+  /* Hide less critical columns on mobile */
+  table th:nth-child(n+7),
+  table td:nth-child(n+7) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Further reduce padding on small mobile */
+  table th,
+  table td {
+    padding: 6px !important;
+    font-size: 0.8125rem !important;
+  }
+
+  /* Make action buttons stack vertically */
+  .flex.space-x-2 {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* Full width buttons in mobile */
+  .flex.space-x-2 button {
+    width: 100% !important;
+  }
+}
+
+/* ======================
+   SIDEBAR & HEADER MOBILE
+   ====================== */
+
+@media (max-width: 1024px) {
+  /* Hide sidebar on mobile by default */
+  aside {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    bottom: 0;
+    z-index: 50;
+    transition: left 0.3s ease-in-out;
+    width: 280px;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+  }
+
+  /* Show sidebar when toggled */
+  aside.mobile-menu-open {
+    left: 0;
+  }
+
+  /* Overlay when sidebar is open */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+    display: none;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  /* Adjust main content for no sidebar */
+  main {
+    margin-left: 0 !important;
+  }
+
+  /* Make header more compact */
+  header {
+    padding: 12px 16px !important;
+  }
+
+  /* Stack header items */
+  header > div {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* ======================
+   MODAL MOBILE FIXES
+   ====================== */
+
+@media (max-width: 640px) {
+  /* Make modals full-screen on small mobile */
+  .modal-panel,
+  div[class*="fixed inset"] > div[class*="bg-white"] {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Scrollable modal body */
+  .modal-body,
+  div[class*="overflow-y-auto"] {
+    max-height: calc(100vh - 200px) !important;
+  }
+
+  /* Stack modal footer buttons */
+  .modal-footer,
+  div[class*="flex justify-end"] {
+    flex-direction: column-reverse !important;
+    gap: 8px !important;
+  }
+
+  .modal-footer button,
+  div[class*="flex justify-end"] button {
+    width: 100% !important;
+  }
+}
+
+/* ======================
+   FORM MOBILE FIXES
+   ====================== */
+
+@media (max-width: 768px) {
+  /* Stack form fields */
+  .grid.grid-cols-2,
+  .grid.grid-cols-3,
+  .grid.grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Full width form controls */
+  .w-1\/2,
+  .w-1\/3,
+  .w-1\/4 {
+    width: 100% !important;
+  }
+
+  /* Better label spacing */
+  label {
+    margin-bottom: 8px !important;
+    display: block;
+  }
+}
+
+/* ======================
+   CARD & PANEL MOBILE
+   ====================== */
+
+@media (max-width: 768px) {
+  /* Reduce card padding */
+  .bg-white.rounded-lg {
+    padding: 16px !important;
+    margin: 8px !important;
+  }
+
+  /* Stack summary cards */
+  .grid.grid-cols-2,
+  .grid.grid-cols-3,
+  .grid.grid-cols-4 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Make panels full width with reduced margins */
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl {
+    max-width: 100% !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* ======================
+   PICKING VIEW MOBILE
+   ====================== */
+
+@media (max-width: 768px) {
+  /* Make picking cards stack nicely */
+  .space-y-4 > div {
+    padding: 12px !important;
+  }
+
+  /* Reduce gap between elements */
+  .space-y-4 {
+    gap: 12px !important;
+  }
+
+  .space-y-2 {
+    gap: 8px !important;
+  }
+
+  /* Make action buttons more prominent */
+  button[class*="bg-"] {
+    padding: 14px 20px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+  }
+}
+
+/* ======================
+   DASHBOARD MOBILE
+   ====================== */
+
+@media (max-width: 768px) {
+  /* Stack dashboard metrics */
+  .flex.justify-between {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  /* Full width stat cards */
+  .flex-1 {
+    min-width: 100% !important;
+  }
+
+  /* Reduce chart heights */
+  canvas {
+    max-height: 250px !important;
+  }
+}
+
+/* ======================
+   OPERATIONS HUB MOBILE
+   ====================== */
+
+@media (max-width: 768px) {
+  /* Already responsive with clamp(), but ensure grid behaves */
+  .apps-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  }
+
+  /* Reduce hero padding */
+  .hero-section {
+    padding: 2rem 1.5rem !important;
+    margin: 1rem !important;
+  }
+
+  /* Smaller titles */
+  .hero-title {
+    font-size: 2rem !important;
+  }
+}
+
+/* ======================
+   TEXT & TYPOGRAPHY MOBILE
+   ====================== */
+
+@media (max-width: 640px) {
+  /* Adjust heading sizes */
+  h1 {
+    font-size: 1.75rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Prevent text overflow */
+  p, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Allow truncation with ellipsis */
+  .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ======================
+   UTILITY CLASSES
+   ====================== */
+
+/* Mobile-specific utility classes */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-text-center {
+    text-align: center !important;
+  }
+
+  .mobile-no-padding {
+    padding: 0 !important;
+  }
+
+  .mobile-no-margin {
+    margin: 0 !important;
+  }
+}
+
+/* ======================
+   ACCESSIBILITY
+   ====================== */
+
+/* Focus visible for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 2px !important;
+}
+
+/* Larger tap targets for accessibility */
+@media (max-width: 768px) and (pointer: coarse) {
+  button,
+  a,
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* ======================
+   LANDSCAPE ORIENTATION
+   ====================== */
+
+@media (max-width: 896px) and (orientation: landscape) {
+  /* Reduce header height in landscape */
+  header {
+    padding: 8px 16px !important;
+  }
+
+  /* Reduce modal padding */
+  .modal-panel {
+    height: 95vh !important;
+  }
+}
+
+/* ======================
+   PRINT STYLES
+   ====================== */
+
+@media print {
+  /* Hide navigation and non-essential elements */
+  aside,
+  header,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Full width for print */
+  main {
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Black and white for print */
+  * {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Page breaks */
+  table {
+    page-break-inside: avoid;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+}
+
+/* ======================
+   TABLET OPTIMIZATIONS
+   ====================== */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Tablet-specific: show 2 columns for cards */
+  .apps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Slightly larger touch targets */
+  button {
+    min-height: 42px;
+    padding: 10px 18px !important;
+  }
+
+  /* Show more table columns than mobile */
+  table th:nth-child(n+9),
+  table td:nth-child(n+9) {
+    display: none;
+  }
+}
+
+/* ======================
+   DARK MODE SUPPORT (if enabled)
+   ====================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Only apply if dark mode feature is enabled */
+  .dark-mode-enabled {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+
+  .dark-mode-enabled .bg-white {
+    background: #374151 !important;
+  }
+
+  .dark-mode-enabled .text-gray-900 {
+    color: #f9fafb !important;
+  }
+
+  .dark-mode-enabled .border-gray-200 {
+    border-color: #4b5563 !important;
+  }
+}
+
