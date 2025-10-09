@@ -70,3 +70,36 @@ export interface LockInfo {
     lockedBy: string;
     comment: string;
 }
+
+export interface AuditLogEntry {
+    id: string;
+    timestamp: string;
+    userId: string;
+    userName: string;
+    action: 'status_change' | 'priority_change' | 'manual_unlock' | 'manual_override' | 'mc_priority_flag' | 'split_mrf' | 'bulk_update' | 'hold' | 'cancel' | 'resume';
+    entityType: 'material_request' | 'material' | 'system';
+    entityId: string;
+    details: string;
+    oldValue?: any;
+    newValue?: any;
+    reason?: string;
+}
+
+export interface SystemConfig {
+    maxItemsPerRequest: number;
+    maxConcurrentRequestsPerUser: number;
+    p1QuotaPerDay: number;
+    rateLimit: number;
+    enabledFeatures: string[];
+}
+
+export interface Permission {
+    userId: string;
+    role: string;
+    canManualUnlock: boolean;
+    canOverrideStatus: boolean;
+    canAdjustPriority: boolean;
+    canViewAuditTrail: boolean;
+    canAccessReports: boolean;
+    canManageSystem: boolean;
+}
