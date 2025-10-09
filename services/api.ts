@@ -114,6 +114,7 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
     mc: [
         { view: 'p1-approval', label: 'P1 Approval Queue', icon: 'FireIcon' },
         { view: 'priority-queue', label: 'Priority Queue', icon: 'QueueListIcon' },
+        { view: 'workflow-diagram', label: 'Workflow Diagram', icon: 'DocumentTextIcon' },
         { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' }
     ]
 };
