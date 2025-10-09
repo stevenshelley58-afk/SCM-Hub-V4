@@ -14,20 +14,20 @@
 ---
 
 ## 🟢 Agent 2 - Admin & Reports
-**Status:** Active  
-**Current Task:** impl-22 (Audit trail system) + impl-15 (MC god mode)  
-**Progress:** 0/15  
-**Blockers:** None  
-**Last Commit:** Starting implementation
-
----
-
-## 🟠 Agent 3 - Integrations
 **Status:** Not started  
 **Current Task:** Awaiting assignment  
 **Progress:** 0/15  
 **Blockers:** None  
 **Last Commit:** N/A
+
+---
+
+## 🟠 Agent 3 - Integrations
+**Status:** Active  
+**Current Task:** impl-16 (Notification system) + impl-36 (Notification templates)  
+**Progress:** 0/15  
+**Blockers:** None  
+**Last Commit:** Starting implementation
 
 ---
 

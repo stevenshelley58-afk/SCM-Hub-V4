@@ -71,35 +71,43 @@ export interface LockInfo {
     comment: string;
 }
 
-export interface AuditLogEntry {
+// Notification types for Agent 3 - Integrations
+export interface NotificationTemplate {
     id: string;
-    timestamp: string;
-    userId: string;
-    userName: string;
-    action: 'status_change' | 'priority_change' | 'manual_unlock' | 'manual_override' | 'mc_priority_flag' | 'split_mrf' | 'bulk_update' | 'hold' | 'cancel' | 'resume';
-    entityType: 'material_request' | 'material' | 'system';
-    entityId: string;
-    details: string;
-    oldValue?: any;
-    newValue?: any;
-    reason?: string;
+    name: string;
+    type: 'email' | 'sms' | 'teams' | 'push';
+    subject?: string;
+    body: string;
+    variables: string[];
 }
 
-export interface SystemConfig {
-    maxItemsPerRequest: number;
-    maxConcurrentRequestsPerUser: number;
-    p1QuotaPerDay: number;
-    rateLimit: number;
-    enabledFeatures: string[];
+export interface Notification {
+    id: string;
+    type: 'email' | 'sms' | 'teams' | 'push';
+    recipient: string;
+    subject?: string;
+    message: string;
+    status: 'pending' | 'sent' | 'failed';
+    sentAt?: string;
+    error?: string;
+    mrfId?: string;
 }
 
-export interface Permission {
-    userId: string;
-    role: string;
-    canManualUnlock: boolean;
-    canOverrideStatus: boolean;
-    canAdjustPriority: boolean;
-    canViewAuditTrail: boolean;
-    canAccessReports: boolean;
-    canManageSystem: boolean;
+export interface NotificationRule {
+    id: string;
+    event: 'submitted' | 'status_change' | 'delay' | 'delivered' | 'short_pick' | 'p1_created';
+    enabled: boolean;
+    channels: ('email' | 'sms' | 'teams')[];
+    recipients: string[];
+    templateId: string;
+}
+
+export interface DeliveryPhoto {
+    id: string;
+    mrfId: string;
+    type: 'condition' | 'storage' | 'delivery';
+    url: string;
+    uploadedBy: string;
+    uploadedAt: string;
+    notes?: string;
 }
