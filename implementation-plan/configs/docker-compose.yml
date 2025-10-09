@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: scm-postgres
+    environment:
+      POSTGRES_DB: scm_hub
+      POSTGRES_USER: scm_user
+      POSTGRES_PASSWORD: scm_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scm_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for events + caching)
+  redis:
+    image: redis:7-alpine
+    container_name: scm-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --appendfsync everysec
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Web Application (Next.js)
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: scm-web
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://scm_user:scm_password@postgres:5432/scm_hub
+      REDIS_URL: redis://redis:6379
+      NEXT_PUBLIC_SUPABASE_URL: ${SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      FEATURE_MATERIALS: true
+      FEATURE_LOGISTICS: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/web:/app/apps/web
+      - ./packages:/app/packages
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+
+  # Background Workers (Event Consumers)
+  worker:
+    build:
+      context: .
+      dockerfile: services/workers/Dockerfile
+    container_name: scm-worker
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://scm_user:scm_password@postgres:5432/scm_hub
+      REDIS_URL: redis://redis:6379
+      WORKER_NAME: worker-1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/workers:/app/services/workers
+      - ./packages:/app/packages
+      - /app/node_modules
+    command: npm run worker
+    restart: unless-stopped
+
+  # Prometheus (optional, for metrics)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: scm-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    profiles:
+      - monitoring
+
+  # Grafana (optional, for dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: scm-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    profiles:
+      - monitoring
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: scm-network
+
