@@ -17,6 +17,20 @@ export interface DeliveryLocation {
     isActive: boolean;
 }
 
+export interface PODData {
+    photos: string[]; // Base64 encoded images
+    signature: string; // Base64 encoded signature
+    recipientName: string;
+    recipientTitle?: string;
+    gpsCoordinates?: {
+        latitude: number;
+        longitude: number;
+    };
+    notes?: string;
+    timestamp: string;
+    capturedBy: string; // Who captured the POD (usually warehouse/delivery person)
+}
+
 export interface MaterialRequest {
     id: string;
     status: 'Submitted' | 'Pending Approval' | 'Approved' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';
@@ -47,6 +61,7 @@ export interface MaterialRequest {
         notes?: string;
     };
     MC_Queue_Position?: number; // MC-controlled queue position (1 = first in queue)
+    pod?: PODData; // Proof of Delivery data
 }
 
 export interface RequestItem {

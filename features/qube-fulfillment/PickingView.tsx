@@ -2,12 +2,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Table } from '../../components/ui/Table';
 import { ConfirmationModal } from '../../components/ui/Modal';
+import { PODCaptureModal } from '../../components/ui/PODCaptureModal';
 import { Popover } from '../../components/ui/Popover';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { ICONS } from '../../components/ui/Icons';
-import { mockRequestItems, mockRequestsData, exceptionReasons, shortReasons } from '../../services/api';
+import { mockRequestItems, mockRequestsData, exceptionReasons, shortReasons, users } from '../../services/api';
 // Fix: Corrected import path for types.
-import { RequestItem, MaterialRequest } from '../../types/index';
+import { RequestItem, MaterialRequest, PODData } from '../../types/index';
 
 interface PickingViewProps {
     params: { request: MaterialRequest } | null;
@@ -19,6 +20,7 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
     const [selection, setSelection] = useState({});
     const [activeModal, setActiveModal] = useState<string | null>(null);
     const [modalData, setModalData] = useState<RequestItem | null>(null);
+    const [isPODModalOpen, setIsPODModalOpen] = useState(false);
 
     // Safety check: if no params or request, redirect back to pick list
     useEffect(() => {
@@ -192,9 +194,34 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
             enableSelection: true,
             onSelectionChange: setSelection
         }),
-        allLinesHandled && React.createElement('button', {
-            onClick: () => setActiveModal('stageCompleteConfirm'),
-            className: 'w-full py-4 text-lg font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-lg'
-        }, 'Stage Complete & Notify Logistics')
+        allLinesHandled && React.createElement('div', { className: 'space-y-2' },
+            React.createElement('button', {
+                onClick: () => setActiveModal('stageCompleteConfirm'),
+                className: 'w-full py-4 text-lg font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-700 shadow-lg'
+            }, '📦 Stage Complete'),
+            React.createElement('button', {
+                onClick: () => setIsPODModalOpen(true),
+                className: 'w-full py-4 text-lg font-bold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow-lg'
+            }, '✅ Capture POD & Mark Delivered')
+        ),
+        React.createElement(PODCaptureModal, {
+            isOpen: isPODModalOpen,
+            onClose: () => setIsPODModalOpen(false),
+            requestId: request.id,
+            onSubmit: (podData: PODData) => {
+                // Find the request and update it with POD
+                const requestIndex = mockRequestsData.findIndex(r => r.id === request.id);
+                if (requestIndex !== -1) {
+                    mockRequestsData[requestIndex].pod = {
+                        ...podData,
+                        capturedBy: users.qube.name
+                    };
+                    mockRequestsData[requestIndex].status = 'Delivered';
+                    console.log('✅ POD captured and request marked as Delivered:', request.id);
+                }
+                setIsPODModalOpen(false);
+                navigate('picklist');
+            }
+        })
     );
 };
