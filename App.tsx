@@ -14,6 +14,7 @@ import { ACDashboardView } from './features/ac-dashboard/ACDashboardView';
 import { AdminControlPanelView } from './features/admin/AdminControlPanelView';
 import { ExceptionDashboardView } from './features/admin/ExceptionDashboardView';
 import { P1ApprovalView } from './features/admin/P1ApprovalView';
+import { PriorityQueueView } from './features/admin/PriorityQueueView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
@@ -83,6 +84,10 @@ const App = () => {
         'p1-approval': {
             title: 'P1 Approval Queue',
             component: () => React.createElement(P1ApprovalView, { navigate })
+        },
+        'priority-queue': {
+            title: 'Priority Queue Management',
+            component: () => React.createElement(PriorityQueueView, { navigate, currentUser })
         },
         'control-panel': {
             title: 'Control Panel',

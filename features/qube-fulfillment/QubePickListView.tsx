@@ -33,11 +33,23 @@ export const QubePickListView = ({ navigate, currentUser }: QubePickListViewProp
     useEffect(() => {
         const submittedRequests = mockRequestsData.filter(r => r.status === 'Submitted' || r.status === 'Picking') as MaterialRequest[];
         submittedRequests.sort((a, b) => {
+            // 1. MC Priority Flag takes absolute precedence
             if (a.MC_Priority_Flag && !b.MC_Priority_Flag) return -1;
             if (!a.MC_Priority_Flag && b.MC_Priority_Flag) return 1;
+            
+            // 2. MC Queue Position (if set by MC in priority queue management)
+            if (a.MC_Queue_Position !== undefined && b.MC_Queue_Position !== undefined) {
+                return a.MC_Queue_Position - b.MC_Queue_Position;
+            }
+            if (a.MC_Queue_Position !== undefined) return -1;
+            if (b.MC_Queue_Position !== undefined) return 1;
+            
+            // 3. AC Priority
             if (a.acPriority && !b.acPriority) return -1;
             if (!a.acPriority && b.acPriority) return 1;
             if (a.acPriority && b.acPriority) return a.acPriority - b.acPriority;
+            
+            // 4. Required by timestamp (earlier first)
             return new Date(a.RequiredByTimestamp).getTime() - new Date(b.RequiredByTimestamp).getTime();
         });
         setPickListData(submittedRequests);

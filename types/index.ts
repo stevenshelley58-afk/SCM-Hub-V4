@@ -34,6 +34,7 @@ export interface MaterialRequest {
         rejectedAt?: string;
         notes?: string;
     };
+    MC_Queue_Position?: number; // MC-controlled queue position (1 = first in queue)
 }
 
 export interface RequestItem {
