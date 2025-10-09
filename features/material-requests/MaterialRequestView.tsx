@@ -4,6 +4,7 @@ import { Table } from '../../components/ui/Table';
 import { DonutChart } from '../../components/ui/DonutChart';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { InfoTooltip } from '../../components/ui/Tooltip';
+import { ETABadge } from '../../components/ui/ETABadge';
 import { mockRequestsData } from '../../services/api';
 // Fix: Corrected import path for types.
 import { MaterialRequest } from '../../types/index';
@@ -39,6 +40,23 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
         { accessorKey: 'items', header: '# of Items' },
         { accessorKey: 'workOrders', header: 'Work Order(s)', cell: ({value}: {value: string}) => React.createElement('span', {className: 'font-mono'}, value) },
         { accessorKey: 'createdDate', header: 'Created Date' },
+        { 
+            accessorKey: 'eta', header: 'ETA', enableFiltering: false,
+            cell: ({ row }: { row: MaterialRequest }) => {
+                // Don't show ETA for completed requests
+                if (row.status === 'Delivered' || row.status === 'Closed' || row.status === 'Cancelled') {
+                    return React.createElement('span', { className: 'text-gray-400 text-sm' }, '—');
+                }
+                return React.createElement(ETABadge, { 
+                    request: {
+                        priority: row.priority,
+                        status: row.status,
+                        queuePosition: row.MC_Queue_Position || 1,
+                        requestedBy: row.RequestedBy
+                    }
+                });
+            }
+        },
         {
             accessorKey: 'actions', header: 'Actions', enableFiltering: false,
             cell: ({ row }: { row: MaterialRequest }) => row.status === 'Delivered' ?

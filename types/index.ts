@@ -53,7 +53,6 @@ export interface MaterialRequest {
         reason: string;
         expectedResumeDate?: string;
     };
-<<<<<<< HEAD
     approvalInfo?: {
         approvedBy?: string;
         approvedAt?: string;
@@ -63,8 +62,14 @@ export interface MaterialRequest {
     };
     MC_Queue_Position?: number; // MC-controlled queue position (1 = first in queue)
     pod?: PODData; // Proof of Delivery data
-=======
->>>>>>> a144409ad37313f63ff26faff71de352eab29380
+    estimatedDelivery?: string; // ISO timestamp of estimated delivery
+    deliveryConfirmation?: {
+        confirmedAt: string;
+        confirmedBy: string;
+        rating?: number; // 1-5
+        feedback?: string;
+        issuesReported?: string;
+    };
 }
 
 export interface RequestItem {

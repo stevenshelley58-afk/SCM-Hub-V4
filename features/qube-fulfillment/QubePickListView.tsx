@@ -7,6 +7,7 @@ import { ICONS } from '../../components/ui/Icons';
 import { OnHoldModal } from '../../components/ui/OnHoldModal';
 import { CancelRequestModal } from '../../components/ui/CancelRequestModal';
 import { SplitMRFModal } from '../../components/ui/SplitMRFModal';
+import { ETABadge } from '../../components/ui/ETABadge';
 import { mockRequestsData, users } from '../../services/api';
 import { addStatusHistoryEntry } from '../../utils/statusHelpers';
 import { autoUnlockMaterials } from '../../utils/materialLockHelpers';
@@ -266,6 +267,23 @@ export const QubePickListView = ({ navigate, currentUser }: QubePickListViewProp
         { accessorKey: 'status', header: 'Status', cell: ({value}: {value: string}) => React.createElement(StatusPill, { status: value }) },
         { accessorKey: 'items', header: '# of Items' },
         { accessorKey: 'RequiredByTimestamp', header: 'Required Time', cell: ({value}: {value: string}) => React.createElement('span', null, new Date(value).toLocaleString()) },
+        { 
+            accessorKey: 'eta', header: 'ETA', enableFiltering: false,
+            cell: ({ row }: { row: MaterialRequest }) => {
+                // Don't show ETA for completed requests
+                if (row.status === 'Delivered' || row.status === 'Closed' || row.status === 'Cancelled') {
+                    return React.createElement('span', { className: 'text-gray-400 text-sm' }, '—');
+                }
+                return React.createElement(ETABadge, { 
+                    request: {
+                        priority: row.priority,
+                        status: row.status,
+                        queuePosition: row.MC_Queue_Position || 1,
+                        requestedBy: row.RequestedBy
+                    }
+                });
+            }
+        },
         { accessorKey: 'DeliveryLocation', header: 'Delivery Location' },
         { accessorKey: 'workOrders', header: 'Work Order(s)' },
         {
