@@ -9,6 +9,7 @@ import { StatusPill } from '../../components/ui/StatusPill';
 import { InfoTooltip } from '../../components/ui/Tooltip';
 import { ICONS } from '../../components/ui/Icons';
 import { masterGridData, mockTransactionalData, mockMaterialLocks, mockRequestsData, mockRequestItems } from '../../services/api';
+import { isFeatureEnabled } from '../../config/features';
 // Fix: Corrected import path for types.
 import { User, WOMaterial } from '../../types/index';
 
@@ -127,9 +128,13 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         const selectedMaterials = masterGridData.filter(m => selected[m.pKey]);
         const workOrders = [...new Set(selectedMaterials.map(m => m.workOrder))].join(', ');
         
+        // Check feature flag: if P1 approval is enabled AND this is P1, send to Pending Approval
+        // Otherwise, go straight to Submitted
+        const needsApproval = isFeatureEnabled('requireP1Approval') && formData.Priority === 'P1';
+        
         const newRequest = {
             id: newMrfId,
-            status: (formData.Priority === 'P1' ? 'Pending Approval' : 'Submitted') as const,
+            status: (needsApproval ? 'Pending Approval' : 'Submitted') as const,
             priority: formData.Priority || 'P4',
             items: selectedItems.length,
             workOrders: workOrders,

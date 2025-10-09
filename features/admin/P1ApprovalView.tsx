@@ -5,6 +5,7 @@ import { P1ApprovalModal } from '../../components/ui/P1ApprovalModal';
 import { mockRequestsData } from '../../services/api';
 import { addStatusHistoryEntry } from '../../utils/statusHelpers';
 import { autoUnlockMaterials } from '../../utils/materialLockHelpers';
+import { isFeatureEnabled } from '../../config/features';
 import { MaterialRequest } from '../../types/index';
 
 interface P1ApprovalViewProps {
@@ -153,6 +154,26 @@ export const P1ApprovalView = ({ navigate }: P1ApprovalViewProps) => {
     const dataWithClick = useMemo(() => {
         return pendingRequests.map(req => ({ ...req, onClick: () => handleRowClick(req) }));
     }, [pendingRequests]);
+
+    // Check if feature is disabled
+    if (!isFeatureEnabled('requireP1Approval')) {
+        return React.createElement('div', { className: 'space-y-4' },
+            React.createElement('div', { className: 'bg-gray-50 border-l-4 border-gray-400 p-4' },
+                React.createElement('div', { className: 'flex items-start' },
+                    React.createElement('div', { className: 'flex-shrink-0' },
+                        React.createElement('span', { className: 'text-3xl' }, 'ℹ️')
+                    ),
+                    React.createElement('div', { className: 'ml-3' },
+                        React.createElement('h3', { className: 'text-sm font-medium text-gray-800' }, 'P1 Approval Feature Disabled'),
+                        React.createElement('div', { className: 'mt-2 text-sm text-gray-700' },
+                            React.createElement('p', null, 'The P1 approval workflow is currently turned off. All P1 requests go directly to the warehouse pick queue without MC approval.'),
+                            React.createElement('p', { className: 'mt-2 font-medium' }, 'To enable: Set requireP1Approval = true in config/features.ts')
+                        )
+                    )
+                )
+            )
+        );
+    }
 
     return React.createElement('div', { className: 'space-y-4' },
         // Alert banner

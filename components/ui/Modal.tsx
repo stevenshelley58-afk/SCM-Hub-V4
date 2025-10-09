@@ -2,6 +2,7 @@
 
 
 import React, { useState, useEffect } from 'react';
+import { isFeatureEnabled } from '../../config/features';
 // Fix: Corrected import path for types.
 import { WOMaterial, User } from '../../types/index';
 
@@ -131,7 +132,13 @@ export const DeliveryDetailsModal = ({ isOpen, onClose, onSubmit, selectedItems,
                                 ) :
                                 field.type === 'textarea' ? React.createElement('textarea', { ...commonProps, rows: 3 }) :
                                 React.createElement('input', { ...commonProps, type: 'text' }),
-                                error && React.createElement('p', { className: 'text-xs text-red-600 mt-1' }, error)
+                                error && React.createElement('p', { className: 'text-xs text-red-600 mt-1' }, error),
+                                // Show P1 approval notice if P1 is selected and feature is enabled
+                                field.name === 'Priority' && formData.Priority?.includes('P1') && isFeatureEnabled('requireP1Approval') &&
+                                    React.createElement('div', { className: 'mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800' },
+                                        React.createElement('p', { className: 'font-semibold' }, '🔥 P1 requests require Material Coordinator approval'),
+                                        React.createElement('p', { className: 'mt-1' }, 'Your request will go to the MC approval queue before the warehouse can begin picking.')
+                                    )
                             );
                         })
                      )
