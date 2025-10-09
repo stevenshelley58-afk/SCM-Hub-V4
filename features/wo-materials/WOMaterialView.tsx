@@ -12,6 +12,9 @@ import { masterGridData, mockTransactionalData, mockMaterialLocks, mockRequestsD
 import { isFeatureEnabled } from '../../config/features';
 // Fix: Corrected import path for types.
 import { User, WOMaterial } from '../../types/index';
+import { checkMaterialAtToll, orderFromToll } from '../../services/tollLTRIntegration';
+import { shouldUseToll } from '../../services/tollLTRIntegration';
+import { notifyRequestSubmitted, notifyP1Approval } from '../../services/workflowNotifications';
 
 interface WOMaterialsViewProps {
     openDetailPanel: (request: any) => void;
@@ -156,6 +159,13 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         
         mockRequestsData.unshift(newRequest); // Add to beginning of array
         
+        // Send notifications
+        if (needsApproval) {
+            notifyP1Approval(newRequest as any).catch(err => console.error('Notification failed:', err));
+        } else {
+            notifyRequestSubmitted(newRequest as any).catch(err => console.error('Notification failed:', err));
+        }
+        
         // Add line items for the request (for picking view)
         mockRequestItems[newMrfId as keyof typeof mockRequestItems] = selectedMaterials.map((m, idx) => ({
             pKey: `LI-${newMrfId}-${idx}`,
@@ -187,6 +197,41 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         setTableData(prevData => [...prevData]);
     };
 
+    const handleOrderFromToll = async (material: WOMaterial) => {
+        setToast({ show: true, message: `Checking Toll availability for ${material.jdeItemNo}...` });
+        
+        // Check availability first
+        const availability = await checkMaterialAtToll(material.jdeItemNo);
+        
+        if (!availability) {
+            setToast({ show: true, message: `❌ Material ${material.jdeItemNo} not found in Toll catalog` });
+            return;
+        }
+        
+        if (!availability.available) {
+            setToast({ show: true, message: `⚠️ Material ${material.jdeItemNo} not currently available at Toll (lead time: ${availability.estimatedLeadTimeDays} days)` });
+            return;
+        }
+        
+        if (availability.quantityOnHand < material.workOrderQty) {
+            setToast({ show: true, message: `⚠️ Insufficient quantity at Toll. Required: ${material.workOrderQty}, Available: ${availability.quantityOnHand}` });
+            return;
+        }
+        
+        // Create a temporary MRF ID for tracking (in real app, would create proper MRF)
+        const tempMrfId = `MRF-TOLL-${Date.now()}`;
+        const deliveryLocation = 'Site 1'; // In real app, would get from user input
+        
+        // Order from Toll
+        const task = await orderFromToll(tempMrfId, material, deliveryLocation, 'standard');
+        
+        if (task) {
+            setToast({ show: true, message: `✅ Toll order created: ${task.taskId}. ETA: ${new Date(task.estimatedDelivery!).toLocaleDateString()}` });
+        } else {
+            setToast({ show: true, message: `❌ Failed to create Toll order` });
+        }
+    };
+
     const RowActions = ({ row }: { row: WOMaterial }) => {
         const [isOpen, setIsOpen] = useState(false);
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -197,6 +242,7 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
         const isLocked = !!mockMaterialLocks[row.pKey];
         const isLockedByMe = isLocked && mockMaterialLocks[row.pKey].lockedBy === currentUser.name;
         const isRequested = !!mockTransactionalData[row.pKey];
+        const canOrderFromToll = shouldUseToll(row) && !isRequested;
 
         if (currentUser.role !== 'Area Coordinator' || isRequested) return null;
 
@@ -206,11 +252,29 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
             ),
             // Fix: Added children to Popover call to satisfy required prop
             React.createElement(Popover, { isOpen, anchorEl, onClose: handleClose, className: "p-1" },
-                isLockedByMe ?
-                    React.createElement('button', { onClick: () => { handleUnlock(row.pKey); handleClose(); }, className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, React.createElement(ICONS.LockOpenIcon, {}), React.createElement('span', null, 'Unlock Material')) :
-                !isLocked ?
-                    React.createElement('button', { onClick: () => { setItemToLock(row); setLockModalOpen(true); handleClose(); }, className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, React.createElement(ICONS.LockClosedIcon, {className: 'h-5 w-5'}), React.createElement('span', null, 'Lock Material')) :
-                    null
+                React.createElement('div', { className: 'flex flex-col' }, [
+                    isLockedByMe ?
+                        React.createElement('button', { 
+                            key: 'unlock',
+                            onClick: () => { handleUnlock(row.pKey); handleClose(); }, 
+                            className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' 
+                        }, React.createElement(ICONS.LockOpenIcon, {}), React.createElement('span', null, 'Unlock Material')) :
+                    !isLocked ?
+                        React.createElement('button', { 
+                            key: 'lock',
+                            onClick: () => { setItemToLock(row); setLockModalOpen(true); handleClose(); }, 
+                            className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' 
+                        }, React.createElement(ICONS.LockClosedIcon, {className: 'h-5 w-5'}), React.createElement('span', null, 'Lock Material')) :
+                        null,
+                    canOrderFromToll && React.createElement('button', {
+                        key: 'toll',
+                        onClick: () => { handleOrderFromToll(row); handleClose(); },
+                        className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-purple-700 hover:bg-purple-50 rounded'
+                    }, 
+                        React.createElement('span', { className: 'text-lg' }, '🚚'),
+                        React.createElement('span', null, 'Order from Toll LTR')
+                    )
+                ])
             )
         );
     };

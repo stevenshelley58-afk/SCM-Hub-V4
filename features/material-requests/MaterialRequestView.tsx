@@ -5,7 +5,9 @@ import { DonutChart } from '../../components/ui/DonutChart';
 import { StatusPill } from '../../components/ui/StatusPill';
 import { InfoTooltip } from '../../components/ui/Tooltip';
 import { ETABadge } from '../../components/ui/ETABadge';
+import { DeliveryConfirmationModal } from '../../components/ui/DeliveryConfirmationModal';
 import { mockRequestsData } from '../../services/api';
+import { addStatusHistoryEntry } from '../../utils/statusHelpers';
 // Fix: Corrected import path for types.
 import { MaterialRequest } from '../../types/index';
 
@@ -16,6 +18,10 @@ interface MaterialRequestsViewProps {
 
 export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewProps) => {
     const [refreshKey, setRefreshKey] = useState(0);
+    const [confirmationModal, setConfirmationModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({
+        isOpen: false,
+        request: null
+    });
     
     // Auto-refresh every 2 seconds to pick up new requests
     useEffect(() => {
@@ -24,6 +30,50 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
         }, 2000);
         return () => clearInterval(interval);
     }, []);
+
+    const handleConfirmDelivery = (request: MaterialRequest, data: {
+        rating?: number;
+        feedback?: string;
+        hasIssue: boolean;
+        issueDescription?: string;
+        issuePhotos?: string[];
+    }) => {
+        const currentUser = { id: 'requestor', name: 'Requestor', role: 'Requestor' };
+
+        if (data.hasIssue) {
+            // Report issue - reopen the request or create a follow-up
+            request.status = 'On Hold';
+            request.onHoldInfo = {
+                putOnHoldBy: currentUser.name,
+                putOnHoldAt: new Date().toISOString(),
+                reason: `Issue reported: ${data.issueDescription}`,
+                expectedResumeDate: undefined
+            };
+            addStatusHistoryEntry(request, 'On Hold', currentUser.name, `Issue reported: ${data.issueDescription}`);
+
+            // In real app, would create a follow-up request or alert MC
+            alert(`Issue reported for request ${request.id}. Material Coordinator has been notified.`);
+        } else {
+            // Confirm delivery - close the request
+            request.status = 'Delivered'; // Keep as Delivered, add confirmation data
+            request.deliveryConfirmation = {
+                confirmedAt: new Date().toISOString(),
+                confirmedBy: currentUser.name,
+                rating: data.rating,
+                feedback: data.feedback
+            };
+            addStatusHistoryEntry(request, 'Delivered', currentUser.name, 'Delivery confirmed by requestor');
+
+            // In real app, would trigger thank-you notification
+            const thankYouMessage = data.rating 
+                ? `Thank you for confirming delivery and rating ${data.rating}⭐!` 
+                : 'Thank you for confirming delivery!';
+            alert(thankYouMessage);
+        }
+
+        setConfirmationModal({ isOpen: false, request: null });
+        setRefreshKey(prev => prev + 1); // Refresh to show updated status
+    };
     const statusData = [
         { label: 'Submitted', value: 6, color: '#0891b2' },
         { label: 'Picking', value: 3, color: '#f59e0b' },
@@ -59,9 +109,47 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
         },
         {
             accessorKey: 'actions', header: 'Actions', enableFiltering: false,
-            cell: ({ row }: { row: MaterialRequest }) => row.status === 'Delivered' ?
-                React.createElement('button', { onClick: (e: React.MouseEvent) => { e.stopPropagation(); openDetailPanel(row); }, className: 'px-3 py-1.5 text-sm font-semibold text-green-700 bg-green-100 rounded-md hover:bg-green-200' }, '📄 View POD') :
-                React.createElement('button', { onClick: (e: React.MouseEvent) => { e.stopPropagation(); openDetailPanel(row); }, className: 'px-3 py-1.5 text-sm font-semibold text-gray-600 bg-white border rounded-md hover:bg-gray-100' }, 'View')
+            cell: ({ row }: { row: MaterialRequest }) => {
+                if (row.status === 'Delivered') {
+                    // Check if already confirmed
+                    if (row.deliveryConfirmation) {
+                        return React.createElement('div', { className: 'flex gap-2' }, [
+                            React.createElement('span', { 
+                                key: 'confirmed',
+                                className: 'px-3 py-1.5 text-sm font-semibold text-green-700 bg-green-50 rounded-md flex items-center gap-1' 
+                            }, [
+                                React.createElement('span', { key: 'icon' }, '✅'),
+                                React.createElement('span', { key: 'text' }, 'Confirmed')
+                            ]),
+                            React.createElement('button', { 
+                                key: 'pod',
+                                onClick: (e: React.MouseEvent) => { e.stopPropagation(); openDetailPanel(row); }, 
+                                className: 'px-3 py-1.5 text-sm font-semibold text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100' 
+                            }, '📄 POD')
+                        ]);
+                    }
+                    // Not yet confirmed
+                    return React.createElement('div', { className: 'flex gap-2' }, [
+                        React.createElement('button', { 
+                            key: 'confirm',
+                            onClick: (e: React.MouseEvent) => { 
+                                e.stopPropagation(); 
+                                setConfirmationModal({ isOpen: true, request: row }); 
+                            }, 
+                            className: 'px-3 py-1.5 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 animate-pulse' 
+                        }, '✅ Confirm'),
+                        React.createElement('button', { 
+                            key: 'pod',
+                            onClick: (e: React.MouseEvent) => { e.stopPropagation(); openDetailPanel(row); }, 
+                            className: 'px-3 py-1.5 text-sm font-semibold text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100' 
+                        }, '📄 POD')
+                    ]);
+                }
+                return React.createElement('button', { 
+                    onClick: (e: React.MouseEvent) => { e.stopPropagation(); openDetailPanel(row); }, 
+                    className: 'px-3 py-1.5 text-sm font-semibold text-gray-600 bg-white border rounded-md hover:bg-gray-100' 
+                }, 'View');
+            }
         }
     ], [openDetailPanel]);
     
@@ -133,6 +221,13 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
             data: dataWithClick,
             columns: tableColumns,
             uniqueId: "id"
+        }),
+        // Delivery Confirmation Modal
+        confirmationModal.request && React.createElement(DeliveryConfirmationModal, {
+            isOpen: confirmationModal.isOpen,
+            onClose: () => setConfirmationModal({ isOpen: false, request: null }),
+            onConfirm: (data) => handleConfirmDelivery(confirmationModal.request!, data),
+            requestId: confirmationModal.request.id
         })
     );
 };

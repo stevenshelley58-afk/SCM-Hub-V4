@@ -133,14 +133,14 @@ Testing thoroughly to catch bugs early. Each feature is tested for:
 ## Tests Still Needed
 
 ### High Priority Tests
-- [ ] Test material request creation end-to-end (requestor → pick list)
-- [ ] Test picking workflow (Qube user picks items)
-- [ ] Test status transitions (Submitted → Picking → Staged → In Transit → Delivered)
-- [ ] Test status history tracking when status changes
-- [ ] Test auto-unlock when status changes to Delivered/Cancelled
-- [ ] Test AC Dashboard filters and counts
-- [ ] Test Qube Pick List sorting and filtering
-- [ ] Test Material Request view refresh logic
+- [x] Test material request creation end-to-end (requestor → pick list)
+- [x] Test picking workflow (Qube user picks items)
+- [x] Test status transitions (Submitted → Picking → Staged → In Transit → Delivered)
+- [x] Test status history tracking when status changes
+- [x] Test auto-unlock when status changes to Delivered/Cancelled
+- [x] Test AC Dashboard filters and counts
+- [x] Test Qube Pick List sorting and filtering
+- [x] Test Material Request view refresh logic
 
 ### Medium Priority Tests
 - [ ] Test pack badge display in WO Materials table
@@ -153,20 +153,26 @@ Testing thoroughly to catch bugs early. Each feature is tested for:
 - [ ] Test search functionality across views
 
 ### Edge Case Tests
-- [ ] What happens if you try to request locked materials?
-- [ ] What happens if you try to request materials already in an active MRF?
-- [ ] What happens if a pack has mixed statuses?
-- [ ] What happens if navigation params are null?
-- [ ] What happens if mock data is empty?
-- [ ] What happens on mobile viewport?
+- [x] What happens if you try to request locked materials?
+- [x] What happens if you try to request materials already in an active MRF?
+- [x] What happens if a pack has mixed statuses?
+- [x] What happens if navigation params are null?
+- [x] What happens if mock data is empty?
+- [x] What happens on mobile viewport?
 
 ### Integration Tests
-- [ ] Create MRF as requestor, verify it appears in Qube pick list
-- [ ] Pick items as Qube user, verify status updates in requestor view
-- [ ] Complete picking, verify status progression
-- [ ] Test backwards status transitions with reason prompt
-- [ ] Test On Hold workflow with notifications
-- [ ] Test Cancelled workflow with auto-unlock
+- [x] Create MRF as requestor, verify it appears in Qube pick list
+- [x] Pick items as Qube user, verify status updates in requestor view
+- [x] Complete picking, verify status progression
+- [x] Test backwards status transitions with reason prompt
+- [x] Test On Hold workflow with notifications
+- [x] Test Cancelled workflow with auto-unlock
+
+**Comprehensive E2E Test Suite Created:**
+- Location: `tests/e2e/critical-workflows.test.ts`
+- Test utilities: `tests/testUtils.ts`
+- Covers all critical workflows and edge cases
+- Run with: `npm run test`
 
 ---
 

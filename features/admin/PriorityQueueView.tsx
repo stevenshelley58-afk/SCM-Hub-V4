@@ -26,6 +26,8 @@ export const PriorityQueueView: React.FC<PriorityQueueViewProps> = ({ navigate, 
     const [draggedItem, setDraggedItem] = useState<MaterialRequest | null>(null);
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const [hasChanges, setHasChanges] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [showBulkActions, setShowBulkActions] = useState(false);
 
     // Check permissions
     const canManageQueue = hasPermission(currentUser, 'god_mode');
@@ -175,6 +177,107 @@ export const PriorityQueueView: React.FC<PriorityQueueViewProps> = ({ navigate, 
         setHasChanges(true);
     }, [queueData]);
 
+    // Bulk selection handlers
+    const handleSelectItem = useCallback((id: string) => {
+        const newSelected = new Set(selectedIds);
+        if (newSelected.has(id)) {
+            newSelected.delete(id);
+        } else {
+            newSelected.add(id);
+        }
+        setSelectedIds(newSelected);
+        setShowBulkActions(newSelected.size > 0);
+    }, [selectedIds]);
+
+    const handleSelectAll = useCallback(() => {
+        if (selectedIds.size === queueData.length) {
+            setSelectedIds(new Set());
+            setShowBulkActions(false);
+        } else {
+            setSelectedIds(new Set(queueData.map(r => r.id)));
+            setShowBulkActions(true);
+        }
+    }, [queueData, selectedIds]);
+
+    // Bulk action handlers
+    const handleBulkAddMCPriority = useCallback(() => {
+        if (selectedIds.size === 0) return;
+        
+        const updated = queueData.map(r => {
+            if (selectedIds.has(r.id) && !r.MC_Priority_Flag) {
+                addStatusHistoryEntry(r, r.status, currentUser.name, 'MC Priority Flag ADDED (bulk)');
+                return { ...r, MC_Priority_Flag: true };
+            }
+            return r;
+        });
+
+        setQueueData(updated);
+        setHasChanges(true);
+        setSelectedIds(new Set());
+        setShowBulkActions(false);
+        alert(`✅ Added MC Priority flag to ${selectedIds.size} request(s)`);
+    }, [selectedIds, queueData, currentUser]);
+
+    const handleBulkRemoveMCPriority = useCallback(() => {
+        if (selectedIds.size === 0) return;
+        
+        const updated = queueData.map(r => {
+            if (selectedIds.has(r.id) && r.MC_Priority_Flag) {
+                addStatusHistoryEntry(r, r.status, currentUser.name, 'MC Priority Flag REMOVED (bulk)');
+                return { ...r, MC_Priority_Flag: false };
+            }
+            return r;
+        });
+
+        setQueueData(updated);
+        setHasChanges(true);
+        setSelectedIds(new Set());
+        setShowBulkActions(false);
+        alert(`✅ Removed MC Priority flag from ${selectedIds.size} request(s)`);
+    }, [selectedIds, queueData, currentUser]);
+
+    const handleBulkMoveToTop = useCallback(() => {
+        if (selectedIds.size === 0) return;
+        
+        const selected = queueData.filter(r => selectedIds.has(r.id));
+        const notSelected = queueData.filter(r => !selectedIds.has(r.id));
+        
+        const newQueue = [...selected, ...notSelected];
+        newQueue.forEach((item, index) => {
+            item.MC_Queue_Position = index + 1;
+            if (selectedIds.has(item.id)) {
+                addStatusHistoryEntry(item, item.status, currentUser.name, 'Moved to top of queue (bulk)');
+            }
+        });
+
+        setQueueData(newQueue);
+        setHasChanges(true);
+        setSelectedIds(new Set());
+        setShowBulkActions(false);
+        alert(`✅ Moved ${selected.length} request(s) to top of queue`);
+    }, [selectedIds, queueData, currentUser]);
+
+    const handleBulkMoveToBottom = useCallback(() => {
+        if (selectedIds.size === 0) return;
+        
+        const notSelected = queueData.filter(r => !selectedIds.has(r.id));
+        const selected = queueData.filter(r => selectedIds.has(r.id));
+        
+        const newQueue = [...notSelected, ...selected];
+        newQueue.forEach((item, index) => {
+            item.MC_Queue_Position = index + 1;
+            if (selectedIds.has(item.id)) {
+                addStatusHistoryEntry(item, item.status, currentUser.name, 'Moved to bottom of queue (bulk)');
+            }
+        });
+
+        setQueueData(newQueue);
+        setHasChanges(true);
+        setSelectedIds(new Set());
+        setShowBulkActions(false);
+        alert(`✅ Moved ${selected.length} request(s) to bottom of queue`);
+    }, [selectedIds, queueData, currentUser]);
+
     if (!canManageQueue) {
         return React.createElement('div', { className: 'p-6' },
             React.createElement('div', { className: 'bg-red-50 border-l-4 border-red-600 p-4' },
@@ -213,9 +316,20 @@ export const PriorityQueueView: React.FC<PriorityQueueViewProps> = ({ navigate, 
 
         // Action buttons
         React.createElement('div', { className: 'flex justify-between items-center' },
-            React.createElement('div', { className: 'text-sm text-gray-600' },
-                React.createElement('span', { className: 'font-semibold' }, queueData.length),
-                ' requests in active queue'
+            React.createElement('div', { className: 'flex items-center gap-4' },
+                React.createElement('div', { className: 'text-sm text-gray-600' },
+                    React.createElement('span', { className: 'font-semibold' }, queueData.length),
+                    ' requests in active queue'
+                ),
+                queueData.length > 0 && React.createElement('label', { className: 'flex items-center gap-2 text-sm text-gray-700 cursor-pointer' },
+                    React.createElement('input', {
+                        type: 'checkbox',
+                        checked: selectedIds.size === queueData.length && queueData.length > 0,
+                        onChange: handleSelectAll,
+                        className: 'w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500'
+                    }),
+                    'Select All'
+                )
             ),
             React.createElement('div', { className: 'flex gap-2' },
                 hasChanges && React.createElement('button', {
@@ -229,6 +343,55 @@ export const PriorityQueueView: React.FC<PriorityQueueViewProps> = ({ navigate, 
                     onClick: handleResetQueue,
                     className: 'px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700'
                 }, 'Reset Queue')
+            )
+        ),
+
+        // Bulk actions toolbar
+        showBulkActions && React.createElement('div', { className: 'bg-blue-50 border border-blue-200 rounded-lg p-4' },
+            React.createElement('div', { className: 'flex items-center justify-between' },
+                React.createElement('div', { className: 'text-sm font-medium text-blue-900' },
+                    React.createElement('span', { className: 'font-bold' }, selectedIds.size),
+                    ' request(s) selected'
+                ),
+                React.createElement('div', { className: 'flex flex-wrap gap-2' }, [
+                    React.createElement('button', {
+                        key: 'add-priority',
+                        onClick: handleBulkAddMCPriority,
+                        className: 'px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 flex items-center gap-1'
+                    },
+                        React.createElement('span', null, '🚩'),
+                        'Add MC Priority'
+                    ),
+                    React.createElement('button', {
+                        key: 'remove-priority',
+                        onClick: handleBulkRemoveMCPriority,
+                        className: 'px-3 py-1.5 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700'
+                    }, 'Remove Priority'),
+                    React.createElement('button', {
+                        key: 'move-top',
+                        onClick: handleBulkMoveToTop,
+                        className: 'px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 flex items-center gap-1'
+                    },
+                        React.createElement('span', null, '⬆️'),
+                        'Move to Top'
+                    ),
+                    React.createElement('button', {
+                        key: 'move-bottom',
+                        onClick: handleBulkMoveToBottom,
+                        className: 'px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 flex items-center gap-1'
+                    },
+                        React.createElement('span', null, '⬇️'),
+                        'Move to Bottom'
+                    ),
+                    React.createElement('button', {
+                        key: 'deselect',
+                        onClick: () => {
+                            setSelectedIds(new Set());
+                            setShowBulkActions(false);
+                        },
+                        className: 'px-3 py-1.5 bg-white text-gray-700 text-sm font-medium rounded-md border border-gray-300 hover:bg-gray-50'
+                    }, 'Deselect All')
+                ])
             )
         ),
 
@@ -246,8 +409,19 @@ export const PriorityQueueView: React.FC<PriorityQueueViewProps> = ({ navigate, 
                     onDrop: (e) => handleDrop(e, index),
                     className: `p-4 flex items-center gap-4 cursor-move hover:bg-gray-50 transition-colors ${
                         dragOverIndex === index ? 'border-t-4 border-blue-500' : ''
-                    } ${draggedItem?.id === request.id ? 'opacity-50' : ''}`
+                    } ${draggedItem?.id === request.id ? 'opacity-50' : ''} ${
+                        selectedIds.has(request.id) ? 'bg-blue-50' : ''
+                    }`
                 },
+                    // Checkbox
+                    React.createElement('input', {
+                        type: 'checkbox',
+                        checked: selectedIds.has(request.id),
+                        onChange: () => handleSelectItem(request.id),
+                        onClick: (e: React.MouseEvent) => e.stopPropagation(),
+                        className: 'w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0'
+                    }),
+
                     // Queue position badge
                     React.createElement('div', { className: 'flex-shrink-0 w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center font-bold text-lg text-gray-700' },
                         index + 1

@@ -3,6 +3,9 @@
  * Configure and send alerts via multiple channels
  */
 
+import { MaterialRequest } from '../types';
+import { calculateRequestETA, isETAOverdue } from '../utils/etaCalculation';
+
 export type AlertChannel = 'email' | 'sms' | 'slack' | 'teams' | 'webhook';
 export type AlertSeverity = 'info' | 'warning' | 'critical';
 
@@ -98,6 +101,21 @@ let alertRules: AlertRule[] = [
         },
         recipients: ['warehouse-lead@company.com', 'inventory-team'],
         cooldownMinutes: 60
+    },
+    {
+        id: 'alert-5',
+        name: 'ETA Overdue Requests',
+        description: 'Alert when requests are overdue on their ETA',
+        enabled: true,
+        severity: 'critical',
+        channels: ['email', 'teams', 'slack'],
+        condition: {
+            metric: 'overdueRequests',
+            operator: '>',
+            threshold: 0
+        },
+        recipients: ['mc@company.com', 'warehouse-lead@company.com', '#operations-alerts'],
+        cooldownMinutes: 30
     }
 ];
 
@@ -311,4 +329,59 @@ export const testAlert = (ruleId: string): Alert | null => {
     if (!rule) return null;
     
     return triggerAlert(rule, rule.condition.threshold + 1);
+};
+
+/**
+ * Check for overdue ETAs and trigger alerts
+ */
+export const checkOverdueETAs = (requests: MaterialRequest[]): Alert[] => {
+    const activeRequests = requests.filter(r => 
+        r.status !== 'Delivered' && 
+        r.status !== 'Closed' && 
+        r.status !== 'Cancelled'
+    );
+    
+    const overdueRequests = activeRequests.filter(request => {
+        const etaData = calculateRequestETA({
+            priority: request.priority,
+            status: request.status,
+            queuePosition: request.MC_Queue_Position || 1,
+            requestedBy: request.RequestedBy
+        });
+        return etaData.isOverdue;
+    });
+    
+    if (overdueRequests.length > 0) {
+        console.warn(`⚠️ ${overdueRequests.length} request(s) are overdue on their ETA:`, 
+            overdueRequests.map(r => r.id).join(', ')
+        );
+        
+        // Trigger alert
+        return checkAndTriggerAlerts({
+            overdueRequests: overdueRequests.length
+        });
+    }
+    
+    return [];
+};
+
+/**
+ * Get overdue requests
+ */
+export const getOverdueRequests = (requests: MaterialRequest[]): MaterialRequest[] => {
+    const activeRequests = requests.filter(r => 
+        r.status !== 'Delivered' && 
+        r.status !== 'Closed' && 
+        r.status !== 'Cancelled'
+    );
+    
+    return activeRequests.filter(request => {
+        const etaData = calculateRequestETA({
+            priority: request.priority,
+            status: request.status,
+            queuePosition: request.MC_Queue_Position || 1,
+            requestedBy: request.RequestedBy
+        });
+        return etaData.isOverdue;
+    });
 };

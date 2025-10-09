@@ -1,10 +1,11 @@
 
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { isFeatureEnabled } from '../../config/features';
 // Fix: Corrected import path for types.
 import { WOMaterial, User } from '../../types/index';
+import { trapFocus, handleEscapeKey, ariaAttributes, generateUniqueId } from '../../utils/accessibility';
 
 interface ConfirmationModalProps {
     isOpen: boolean;
@@ -25,15 +26,47 @@ interface ModalProps {
 }
 
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+    const modalRef = useRef<HTMLDivElement>(null);
+    const titleId = useRef(generateUniqueId('modal-title')).current;
+    
+    useEffect(() => {
+        if (!isOpen || !modalRef.current) return;
+        
+        // Trap focus within modal
+        const cleanup = trapFocus(modalRef.current);
+        
+        // Handle ESC key
+        const escCleanup = handleEscapeKey(onClose);
+        
+        return () => {
+            cleanup();
+            escCleanup();
+        };
+    }, [isOpen, onClose]);
+    
     if (!isOpen) return null;
     
-    return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4" },
-        React.createElement('div', { className: "bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" },
+    return React.createElement('div', { 
+        className: "fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4",
+        onClick: onClose,
+        role: 'presentation'
+    },
+        React.createElement('div', { 
+            ref: modalRef,
+            className: "bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto",
+            onClick: (e: React.MouseEvent) => e.stopPropagation(),
+            ...ariaAttributes.modal(isOpen, titleId),
+        },
             React.createElement('div', { className: "sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between" },
-                React.createElement('h3', { className: "text-lg font-bold text-gray-900" }, title),
+                React.createElement('h3', { 
+                    id: titleId,
+                    className: "text-lg font-bold text-gray-900" 
+                }, title),
                 React.createElement('button', { 
                     onClick: onClose,
-                    className: "text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className: "text-gray-400 hover:text-gray-600 focus:outline-none",
+                    'aria-label': 'Close modal',
+                    type: 'button'
                 }, '×')
             ),
             React.createElement('div', { className: "px-6 py-4" }, children)

@@ -1,0 +1,354 @@
+/**
+ * Dark Theme CSS
+ * Comprehensive dark mode styles for SCM Hub
+ */
+
+/* Root variables for dark theme */
+.dark {
+    color-scheme: dark;
+    
+    /* Background colors */
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --bg-hover: #4b5563;
+    
+    /* Text colors */
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --text-tertiary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    /* Border colors */
+    --border-primary: #374151;
+    --border-secondary: #4b5563;
+    
+    /* Accent colors (maintain for branding) */
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
+    --accent-purple: #8b5cf6;
+}
+
+/* Global dark theme overrides */
+.dark body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Backgrounds */
+.dark .bg-white {
+    background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-gray-50 {
+    background-color: var(--bg-primary) !important;
+}
+
+.dark .bg-gray-100 {
+    background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-gray-200 {
+    background-color: var(--bg-tertiary) !important;
+}
+
+.dark .bg-gray-300,
+.dark .bg-gray-400 {
+    background-color: var(--bg-hover) !important;
+}
+
+/* Text colors */
+.dark .text-gray-900 {
+    color: var(--text-primary) !important;
+}
+
+.dark .text-gray-800 {
+    color: var(--text-secondary) !important;
+}
+
+.dark .text-gray-700 {
+    color: var(--text-tertiary) !important;
+}
+
+.dark .text-gray-600 {
+    color: var(--text-muted) !important;
+}
+
+.dark .text-gray-500,
+.dark .text-gray-400 {
+    color: #9ca3af !important;
+}
+
+/* Borders */
+.dark .border-gray-200 {
+    border-color: var(--border-primary) !important;
+}
+
+.dark .border-gray-300 {
+    border-color: var(--border-secondary) !important;
+}
+
+.dark .divide-gray-200 > * + * {
+    border-color: var(--border-primary) !important;
+}
+
+/* Form inputs */
+.dark input,
+.dark textarea,
+.dark select {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-secondary);
+    color: var(--text-primary);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+    background-color: var(--bg-hover);
+    border-color: var(--accent-blue);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* Buttons */
+.dark button:not(.bg-blue-600):not(.bg-green-600):not(.bg-red-600):not(.bg-orange-600):not(.bg-purple-600):not(.bg-yellow-600) {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-secondary);
+}
+
+.dark button:hover:not(.bg-blue-600):not(.bg-green-600):not(.bg-red-600):not(.bg-orange-600):not(.bg-purple-600):not(.bg-yellow-600) {
+    background-color: var(--bg-hover);
+}
+
+/* Keep accent buttons bright */
+.dark .bg-blue-600 {
+    background-color: #2563eb !important;
+}
+
+.dark .bg-blue-700 {
+    background-color: #1d4ed8 !important;
+}
+
+.dark .bg-green-600 {
+    background-color: #059669 !important;
+}
+
+.dark .bg-green-700 {
+    background-color: #047857 !important;
+}
+
+.dark .bg-red-600 {
+    background-color: #dc2626 !important;
+}
+
+.dark .bg-red-700 {
+    background-color: #b91c1c !important;
+}
+
+/* Cards and panels */
+.dark .shadow-lg,
+.dark .shadow-xl,
+.dark .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Modals */
+.dark .bg-black.bg-opacity-50,
+.dark .bg-black.bg-opacity-60 {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Tables */
+.dark table {
+    border-color: var(--border-primary);
+}
+
+.dark thead {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.dark tbody tr {
+    border-color: var(--border-primary);
+    color: var(--text-secondary);
+}
+
+.dark tbody tr:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.dark th {
+    color: var(--text-primary);
+}
+
+/* Pills and badges */
+.dark .bg-blue-100 {
+    background-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+.dark .text-blue-700 {
+    color: #93c5fd !important;
+}
+
+.dark .bg-green-100 {
+    background-color: rgba(5, 150, 105, 0.2) !important;
+}
+
+.dark .text-green-700 {
+    color: #86efac !important;
+}
+
+.dark .bg-red-100 {
+    background-color: rgba(220, 38, 38, 0.2) !important;
+}
+
+.dark .text-red-700 {
+    color: #fca5a5 !important;
+}
+
+.dark .bg-yellow-100 {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+.dark .text-yellow-700 {
+    color: #fcd34d !important;
+}
+
+.dark .bg-orange-100 {
+    background-color: rgba(249, 115, 22, 0.2) !important;
+}
+
+.dark .text-orange-700 {
+    color: #fdba74 !important;
+}
+
+.dark .bg-purple-100 {
+    background-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+.dark .text-purple-700 {
+    color: #c4b5fd !important;
+}
+
+.dark .bg-gray-100.text-gray-700 {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-tertiary) !important;
+}
+
+/* Sidebar specific */
+.dark .sidebar {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+/* Header specific */
+.dark .header {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+}
+
+/* Hover states */
+.dark .hover\:bg-gray-50:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+.dark .hover\:bg-gray-100:hover {
+    background-color: var(--bg-tertiary) !important;
+}
+
+.dark .hover\:bg-gray-200:hover {
+    background-color: var(--bg-hover) !important;
+}
+
+/* Focus states - keep visible for accessibility */
+.dark *:focus-visible {
+    outline-color: var(--accent-blue);
+}
+
+/* Scrollbars (Webkit) */
+.dark ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 6px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Selection */
+.dark ::selection {
+    background-color: rgba(59, 130, 246, 0.5);
+    color: var(--text-primary);
+}
+
+/* Charts and visualizations - maintain legibility */
+.dark svg text {
+    fill: var(--text-secondary);
+}
+
+/* Toast notifications */
+.dark .toast {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-secondary);
+}
+
+/* Dropdown menus */
+.dark .dropdown-menu {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-primary);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Code blocks */
+.dark code,
+.dark pre {
+    background-color: var(--bg-tertiary);
+    color: #93c5fd;
+}
+
+/* Links */
+.dark a {
+    color: var(--accent-blue);
+}
+
+.dark a:hover {
+    color: #60a5fa;
+}
+
+/* Disabled states */
+.dark button:disabled,
+.dark input:disabled,
+.dark select:disabled,
+.dark textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-tertiary);
+    color: var(--text-muted);
+}
+
+/* Transitions for smooth theme switching */
+* {
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Prevent transitions on theme change for better performance */
+.dark.no-transition * {
+    transition: none !important;
+}
+

@@ -18,9 +18,14 @@ import { P1ApprovalView } from './features/admin/P1ApprovalView';
 import { PriorityQueueView } from './features/admin/PriorityQueueView';
 import { WorkflowDiagramView } from './features/admin/WorkflowDiagramView';
 import { LocationManagementView } from './features/admin/LocationManagementView';
+import { KeyboardShortcutsModal } from './components/ui/KeyboardShortcutsModal';
+import { LogisticsDispatcherView } from './features/logistics/LogisticsDispatcherView';
+import { LogisticsDriverView } from './features/logistics/LogisticsDriverView';
+import { LogisticsConfigView } from './features/logistics/LogisticsConfigView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
 import type { User, MaterialRequest } from './types/index';
+import { initDefaultShortcuts } from './utils/keyboardShortcuts';
 
 const PlaceholderView = ({ user }: { user: User }) => React.createElement('div', { className: "p-8 border-4 border-dashed border-gray-200 rounded-lg bg-white h-full flex items-center justify-center" },
     React.createElement('div', { className: "text-center" },
@@ -34,6 +39,34 @@ const App = () => {
     const [currentView, setCurrentView] = useState('hub');
     const [viewParams, setViewParams] = useState<any>(null);
     const [detailPanel, setDetailPanel] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
+    const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+    const [searchFocused, setSearchFocused] = useState(false);
+
+    // Initialize keyboard shortcuts
+    useEffect(() => {
+        initDefaultShortcuts({
+            onQuickSearch: () => {
+                // Focus on search input if available, or navigate to material requests view
+                const searchInput = document.querySelector('input[type="search"], input[placeholder*="Search"]') as HTMLInputElement;
+                if (searchInput) {
+                    searchInput.focus();
+                    setSearchFocused(true);
+                } else {
+                    // If no search input, go to material requests view which has search
+                    setCurrentView('material-requests');
+                }
+            },
+            onNewRequest: () => {
+                // Navigate to WO Materials view to create new request
+                if (currentUser.id === 'requestor' || currentUser.id === 'ac') {
+                    setCurrentView('wo-materials');
+                }
+            },
+            onShowHelp: () => {
+                setShowShortcutsHelp(true);
+            }
+        });
+    }, [currentUser]);
 
     // When user changes, reset to their first nav link (unless on hub)
     useEffect(() => {
@@ -111,6 +144,18 @@ const App = () => {
         'integrations': {
             title: 'Integrations & Notifications',
             component: () => React.createElement(IntegrationsView, {})
+        },
+        'logistics-dispatcher': {
+            title: 'Logistics Dispatcher',
+            component: () => React.createElement(LogisticsDispatcherView, {})
+        },
+        'logistics-driver': {
+            title: 'Driver Tasks',
+            component: () => React.createElement(LogisticsDriverView, { driverId: 'demo-driver-1' })
+        },
+        'logistics-config': {
+            title: 'Logistics Configuration',
+            component: () => React.createElement(LogisticsConfigView, {})
         }
     };
 
@@ -121,7 +166,8 @@ const App = () => {
     if (currentView === 'hub') {
         return React.createElement('div', { className: "min-h-screen bg-gray-50 font-sans" },
             React.createElement(ActiveView, null),
-            React.createElement(RequestDetailPanel, { ...detailPanel, onClose: closeDetailPanel, currentUser: currentUser })
+            React.createElement(RequestDetailPanel, { ...detailPanel, onClose: closeDetailPanel, currentUser: currentUser }),
+            React.createElement(KeyboardShortcutsModal, { isOpen: showShortcutsHelp, onClose: () => setShowShortcutsHelp(false) })
         );
     }
 
@@ -133,7 +179,8 @@ const App = () => {
                 React.createElement(ActiveView, null)
             )
         ),
-        React.createElement(RequestDetailPanel, { ...detailPanel, onClose: closeDetailPanel, currentUser: currentUser })
+        React.createElement(RequestDetailPanel, { ...detailPanel, onClose: closeDetailPanel, currentUser: currentUser }),
+        React.createElement(KeyboardShortcutsModal, { isOpen: showShortcutsHelp, onClose: () => setShowShortcutsHelp(false) })
     );
 };
 

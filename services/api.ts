@@ -8,7 +8,9 @@ export const users: { [key: string]: User} = {
     requestor: { id: 'requestor', name: 'Requestor', role: 'Requestor', phone: '555-123-4567' },
     ac: { id: 'ac', name: 'Area Coordinator', role: 'Area Coordinator' },
     qube: { id: 'qube', name: 'Qube User', role: 'Qube User' },
-    mc: { id: 'mc', name: 'Material Coordinator', role: 'Material Coordinator' }
+    mc: { id: 'mc', name: 'Material Coordinator', role: 'Material Coordinator' },
+    mlc: { id: 'mlc', name: 'Logistics Coordinator', role: 'Logistics Coordinator' },
+    driver: { id: 'driver', name: 'Driver', role: 'Driver' }
 };
 
 // Helper function to generate full address
@@ -250,5 +252,13 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'location-management', label: 'Delivery Locations', icon: 'MapPinIcon' },
         { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' },
         { view: 'integrations', label: 'Integrations', icon: 'CloudIcon' }
+    ],
+    mlc: [
+        { view: 'logistics-dispatcher', label: 'Task Dispatcher', icon: 'TruckIcon' },
+        { view: 'logistics-config', label: 'Configuration', icon: 'Cog8ToothIcon' },
+        { view: 'material-requests', label: 'Material Requests', icon: 'RocketLaunchIcon' }
+    ],
+    driver: [
+        { view: 'logistics-driver', label: 'My Tasks', icon: 'TruckIcon' }
     ]
 };
