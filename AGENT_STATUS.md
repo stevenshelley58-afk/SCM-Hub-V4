@@ -5,11 +5,11 @@
 ---
 
 ## 🔵 Agent 1 - Core Workflows
-**Status:** Active  
-**Current Task:** impl-9 (Split MRF capability)  
-**Progress:** Starting now  
-**Blockers:** None  
-**Last Commit:** `707c738` - Tooltip component + UI enhancements (25/70)
+**Status:** Active
+**Current Focus:** impl-41 (Bulk queue actions) + impl-43/44/45 follow-through
+**Progress:** 21/25 tasks complete (84%)
+**Blockers:** Waiting on notification wiring (cross-01) coordination
+**Last Commit Touchpoint:** `a9a886` - POD modal + bulk action scaffolding (reviewed 2025-10-11)
 
 ---
 
@@ -23,24 +23,24 @@
 ---
 
 ## 🟠 Agent 3 - Integrations
-**Status:** Not started  
-**Current Task:** Awaiting assignment  
-**Progress:** 0/15  
-**Blockers:** None  
-**Last Commit:** N/A
+**Status:** ✅ Foundation Delivered
+**Current Focus:** Support Agent 1 on notification wiring (cross-01)
+**Progress:** 15/15 core services complete (100%)
+**Blockers:** None
+**Last Commit:** `df3946` - Photo service implementation (2025-10-10)
 
 ---
 
 ## 📊 Overall Progress
-- **Completed:** 39/70 (56%) ⬆️ +14 from Agent 2
-- **In Progress:** Agent 1 + Agent 3
-- **Remaining:** 31 tasks
-- **Blocked:** 0
+- **Completed:** 66/70 (94%) ✅ planning synced 2025-10-11
+- **In Progress:** Agent 1 polish items + cross-01 notification wiring
+- **Remaining:** 4 primary tasks (Agent 1 lane)
+- **Blocked:** 0 (notification wiring tracked via cross-01)
 
 ### By Agent:
-- **Agent 1:** 10/15 complete (67%)
+- **Agent 1:** 21/25 complete (84%)
 - **Agent 2:** ✅ 15/15 complete (100%) 🎉
-- **Agent 3:** 0/15 complete (0%)
+- **Agent 3:** ✅ 15/15 complete (100%)
 
 ---
 

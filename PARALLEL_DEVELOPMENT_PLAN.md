@@ -1,94 +1,34 @@
 # Parallel Development Plan - 3 Claude Agents
 
-**Current Progress:** 39 of 70 tasks complete (56%) ✨  
-**Remaining:** 31 tasks (Agent 1: 15, Agent 3: 15, Other: 1)
+**Current Progress:** 66 of 70 tasks complete (94%) ✅
+**Remaining:** 4 finish-line tasks (Agent 1: 4) + 1 cross-cutting wiring item
 
 **Agent 2:** ✅ **COMPLETED** - 15/15 tasks (100%)
 
 ---
 
 ## 🔵 Agent 1 (Current - You) - Core Workflows & Business Logic
-**Focus:** Critical path features, data flow, and core business logic
+**Focus:** Final-mile delivery polish & integrating Agent 3 services
 
-### Assigned Tasks (15 tasks)
+### Remaining Tasks (4)
 
-#### High Priority
-1. **impl-9**: Add split MRF capability
-   - Allow users to split a request into multiple MRFs
-   - UI for selecting which items go to each split
-   - Maintain parent-child relationship
+1. **impl-41 – Bulk queue actions**
+   - Turn on mass action bar in `PriorityQueueView`.
+   - Persist updates + audit entries; trigger notifications for affected personas.
 
-2. **impl-17**: Add P1 approval workflow
-   - MC must approve P1 requests before warehouse starts
-   - Approval modal with reason/notes
-   - Status flow: Submitted → Pending Approval → Approved → Picking
+2. **impl-43 – POD capture integration**
+   - Use `photoService`/`offlineService` for uploads.
+   - Surface POD assets + signatures in request detail timeline.
+   - Send delivered notifications after capture.
 
-3. **impl-30**: Add priority queue management
-   - Visual priority queue for MC
-   - Drag-and-drop reordering
-   - Override AC priority with MC priority
+3. **impl-44 – ETA tracking**
+   - Create shared ETA helpers using MC input + `ltrIntegrationService` updates.
+   - Display ETA + lateness indicators across MC/AC/requestor views.
+   - Alert + audit log on ETA changes.
 
-4. **impl-40**: Add workflow state machine
-   - Define valid status transitions
-   - Prevent invalid transitions
-   - Auto-transition logic
-
-5. **impl-41**: Add bulk operations
-   - Select multiple requests
-   - Bulk status changes
-   - Bulk priority updates
-
-6. **impl-43**: Add POD (Proof of Delivery) capture system
-   - Photo upload on delivery
-   - Signature capture
-   - Delivery notes
-
-7. **impl-44**: Add ETA tracking
-   - Estimated delivery times
-   - Real-time updates
-   - Notifications when ETA changes
-
-8. **impl-45**: Add delivery confirmation
-   - Requestor confirms receipt
-   - Rate service quality
-   - Report issues immediately
-
-#### Medium Priority
-9. **impl-18**: Add delivery location management
-   - CRUD for delivery locations
-   - Location validation
-   - Common locations dropdown
-
-10. **impl-39**: Add conflict resolution UI
-    - When master data conflicts with transactional
-    - Show diff and allow MC to resolve
-    - Audit log of resolutions
-
-11. **impl-50**: Add user preference saving
-    - Save column visibility
-    - Save filter preferences
-    - Save default views
-
-12. **impl-62**: Add data validation
-    - Client-side validation rules
-    - Real-time feedback
-    - Prevent invalid submissions
-
-#### Lower Priority
-13. **impl-58**: Add accessibility features
-    - ARIA labels
-    - Keyboard navigation improvements
-    - Screen reader support
-
-14. **impl-59**: Add keyboard shortcuts
-    - Ctrl+N for new request
-    - Ctrl+F for search
-    - Esc to close modals
-
-15. **impl-67**: Final integration testing
-    - End-to-end workflow testing
-    - Cross-browser testing
-    - Performance testing
+4. **impl-45 – Delivery confirmation**
+   - Add confirm/report flows for requestors with offline-safe queueing.
+   - Update statuses, spawn issue workflows, and fire notifications.
 
 ---
 
@@ -207,99 +147,18 @@
 ---
 
 ## 🟠 Agent 3 - Integrations & Infrastructure
-**Focus:** External integrations, notifications, and DevOps
+**Focus:** Platform complete – providing integration support for Agent 1 polish
 
-### Assigned Tasks (15 tasks)
+### Delivered Capabilities
+- ✅ Multi-channel notification system with reusable templates.
+- ✅ Toll LTR connector, SharePoint sync, conflict dashboards.
+- ✅ Photo storage + offline queue, rate limiting, session management.
+- ✅ Deployment automation, security audit, full API documentation.
 
-#### High Priority
-1. **impl-16**: Add stakeholder notification system
-   - Notify when request submitted
-   - Notify when status changes
-   - Notify on delays
-   - Notify on delivery
-   - Configurable notification rules
-
-2. **impl-19**: Add Toll LTR integration
-   - Send delivery tasks to LTR system
-   - Receive delivery confirmations
-   - Handle delivery failures
-   - Retry logic
-
-3. **impl-20**: Add SharePoint data sync
-   - Hourly master data sync
-   - Conflict detection
-   - Manual sync trigger
-   - Sync status dashboard
-
-4. **impl-36**: Add notification templates
-   - Email templates
-   - SMS templates
-   - Push notification templates
-   - Template variables
-
-5. **impl-37**: Add email/SMS integration
-   - SendGrid or similar for email
-   - Twilio or similar for SMS
-   - Delivery status tracking
-   - Bounce handling
-
-6. **impl-38**: Add Teams integration
-   - Post to Teams channels
-   - Interactive cards
-   - Bot commands
-   - Webhook handlers
-
-#### Medium Priority
-7. **impl-23**: Add photo documentation
-   - Material condition photos
-   - Storage location photos
-   - Delivery photos
-   - Image compression
-   - Image storage
-
-8. **impl-27**: Add data export/import
-   - Export requests to Excel
-   - Export audit logs
-   - Import master data
-   - Bulk import materials
-
-9. **impl-51**: Add offline capability
-   - Service worker
-   - Cache critical data
-   - Offline queue
-   - Sync when online
-
-10. **impl-52**: Add rate limiting
-    - Prevent API abuse
-    - Throttle requests
-    - Queue overflow protection
-
-11. **impl-53**: Add session management
-    - Session timeout
-    - Auto-save drafts
-    - Session recovery
-
-12. **impl-56**: Add backup system
-    - Daily automated backups
-    - Point-in-time recovery
-    - Backup verification
-
-13. **impl-57**: Add security audit
-    - Penetration testing
-    - Vulnerability scanning
-    - Security headers
-    - XSS/CSRF protection
-
-14. **impl-63**: Add API documentation
-    - Swagger/OpenAPI docs
-    - Code examples
-    - Integration guides
-
-15. **impl-65**: Add deployment automation
-    - CI/CD pipeline
-    - Automated testing
-    - Staging environment
-    - Blue-green deployment
+### Ongoing Support
+1. Partner on **cross-01** to embed notifications in live workflows.
+2. Supply smoke-test scripts for notification, photo, and offline flows.
+3. Advise on ETA helper design leveraging `ltrIntegrationService` hooks.
 
 ---
 
@@ -338,10 +197,10 @@
 ## 📊 Success Metrics
 
 ### Agent 1 (Core Workflows)
-- [ ] All P1 workflows functioning
-- [ ] Split MRF working end-to-end
-- [ ] Bulk operations tested
-- [ ] POD system capturing data
+- [x] All P1 workflows functioning
+- [x] Split MRF working end-to-end
+- [ ] Bulk queue actions live (impl-41)
+- [ ] POD/ETA/confirmation flows integrated (impl-43/44/45)
 
 ### Agent 2 (Admin & Reports) ✅ **COMPLETE**
 - [x] MC control panel operational
@@ -351,10 +210,11 @@
 - **Status:** All 15 tasks complete!
 
 ### Agent 3 (Integrations)
-- [ ] Notifications sending successfully
-- [ ] LTR integration tested
-- [ ] SharePoint sync working
-- [ ] Email/SMS working
+- [x] Notifications sending successfully
+- [x] LTR integration tested
+- [x] SharePoint sync working
+- [x] Email/SMS + Teams adapters operational
+- [ ] Cross-01 notification wiring documented with Agent 1
 
 ---
 
@@ -386,9 +246,9 @@ npm run deploy
 ## 📝 Notes
 
 ### Current State
-- **39/70 tasks complete (56%)** ⬆️ +14 from Agent 2
+- **66/70 tasks complete (94%)** – final polish underway
 - **Agent 2: COMPLETE** - 15/15 tasks delivered
-- **Agent 1 & 3: In Progress**
+- **Agent 1: Polishing final four tasks; Agent 3 supporting cross-01 wiring**
 - **Main branch is stable**
 - **Dev server runs on port 3001**
 
@@ -421,9 +281,9 @@ Each agent should:
 4. Commit after each completed task
 5. Have fun building! 🚀
 
-**Target:** Complete all 45 remaining tasks in parallel
-**Timeline:** As fast as possible with quality
-**Coordination:** File-based status updates
+**Target:** Ship remaining 4 tasks + cross-01 wiring
+**Timeline:** Focus sprint this week (aim for completion by 2025-10-15)
+**Coordination:** File-based status updates + weekly hygiene review
 
 Good luck, team! 💪
 

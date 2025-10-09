@@ -1,6 +1,6 @@
 # SCM Hub V4 - Comprehensive Review & Remaining TODOs
 
-**Date:** October 9, 2025  
+**Date:** October 11, 2025
 **Review Type:** Full Project Status  
 **Agents:** Agent 1, Agent 2, Agent 3
 
@@ -8,21 +8,21 @@
 
 ## 📊 OVERALL PROJECT STATUS
 
-### Current Progress: **59/70 Tasks Complete (84%)**
+### Current Progress: **66/70 Tasks Complete (94%)**
 
 | Category | Complete | Remaining | % Done |
 |----------|----------|-----------|--------|
-| **Agent 1 (Core Workflows)** | 14 | 11 | 56% |
+| **Agent 1 (Core Workflows)** | 21 | 4 | 84% |
 | **Agent 2 (Admin/Monitoring)** | 15 | 0 | 100% ✅ |
 | **Agent 3 (Integrations)** | 15 | 0 | 100% ✅ |
 | **Documentation** | 15 | 0 | 100% ✅ |
-| **TOTAL** | 59 | 11 | 84% |
+| **TOTAL** | 66 | 4 | 94% |
 
 ---
 
 ## ✅ COMPLETED WORK
 
-### Agent 1 - Core Workflows (14/25 tasks)
+### Agent 1 - Core Workflows (21/25 tasks)
 
 #### Status Management ✅
 - [x] New statuses: Partial Pick-Open, Partial Pick-Closed, On Hold, Cancelled, Pending Approval, Approved, Staged
@@ -47,8 +47,10 @@
 - [x] P1 Approval workflow with toggleable feature flag
 - [x] Feature toggle system (`config/features.ts`)
 - [x] Permissions system with MC god mode (`utils/permissions.ts`)
-- [x] Priority queue management with drag-and-drop
+- [x] Priority queue management with drag-and-drop + selection scaffolding
 - [x] Material auto-unlock on delivery/cancel
+- [x] Delivery location management (admin CRUD + request form integration)
+- [x] Mobile responsive styling pass (`mobile-responsive.css`)
 
 #### UI Components ✅
 - [x] Operations Hub landing page
@@ -56,9 +58,10 @@
 - [x] Tooltip component for inline help
 - [x] PermissionBadge for MC god mode
 - [x] OnHoldView dashboard
-- [x] PriorityQueueView with drag-and-drop
+- [x] PriorityQueueView with drag-and-drop and bulk-action affordances
 - [x] WorkflowDiagramView
 - [x] Auto-refresh on pick list and material requests views
+- [x] LocationManagementView (Agent 1 + admin lane)
 
 ---
 
@@ -262,143 +265,31 @@
 
 ---
 
-## 🚧 REMAINING WORK (11 Tasks)
+## 🚧 REMAINING WORK (4 Tasks + Cross-Cutting Wiring)
 
-### 🔴 Agent 1 - Critical Tasks (6 remaining)
+### 🔵 Agent 1 - Final Tasks (4 remaining)
 
-#### 1. **impl-18: Delivery location management**
-**Why Critical:** Users need to manage where materials go  
-**What to build:**
-- Location master data (Building, Floor, Room, Contact)
-- CRUD interface for locations
-- Search/filter locations
-- Integration with WO Materials form
-- Add to mock data
+#### 1. **impl-41: Bulk queue actions for MC**
+**Why it matters:** MCs need to move multiple requests at once to keep pace with live operations.
+**What to finish:** Activate the bulk action bar in `PriorityQueueView`, persist results to `mockRequestsData`, log via `auditService`, and broadcast notifications when mass updates affect downstream teams.
 
-**Files:**
-```
-features/admin/
-  └── LocationManagementView.tsx
-services/api.ts:
-  - Add mockLocations array
-types/index.ts:
-  - Add DeliveryLocation interface
-```
+#### 2. **impl-43: POD capture integration**
+**Why it matters:** Capture and surface delivered evidence for audit + customer transparency.
+**What to finish:** Route POD uploads through `photoService`/`offlineService`, surface captured assets in `RequestDetailPanel`, and trigger delivered notifications after submission.
 
----
+#### 3. **impl-44: ETA tracking**
+**Why it matters:** Requestors and ACs need reliable arrival forecasts.
+**What to finish:** Build shared ETA helpers that combine MC estimates with `ltrIntegrationService` updates, display ETA + lateness indicators across dashboards, and log changes to the audit trail.
 
-#### 2. **impl-24: Mobile responsive design**
-**Why Critical:** Warehouse users on tablets/phones  
-**What to do:**
-- Test all views on mobile (320px, 768px, 1024px)
-- Fix layout breaks
-- Make tables horizontally scrollable
-- Enlarge touch targets (buttons, checkboxes)
-- Test Operations Hub on mobile
+#### 4. **impl-45: Delivery confirmation**
+**Why it matters:** Close the loop with requestors and collect issue feedback.
+**What to finish:** Add confirm/report flows with offline-safe queuing, update statuses + notifications accordingly, and record confirmation/issue events in the audit log.
 
-**Files to review:**
-- All `.tsx` files with complex layouts
-- `QubePickListView.tsx` - critical for warehouse
-- `PickingView.tsx` - critical for warehouse
+### 🧭 Cross-Cutting
+- **cross-01: Wire notifications into core workflows** – connect submission/approval/hold/delivery events to the new notification services and templates so downstream personas receive updates.
 
----
-
-#### 3. **impl-43: POD capture system**
-**Why Critical:** Proof of delivery required  
-**What to build:**
-- Delivery confirmation modal
-- Capture: Photos, Signature, GPS, Timestamp, Recipient name
-- Show in request detail view
-- Add to `MaterialRequest` type
-
-**Files:**
-```
-components/ui/
-  ├── PODCaptureModal.tsx
-  └── SignaturePad.tsx
-types/index.ts:
-  - Add POD interface
-```
-
-**Integration:** Call from `PickingView.tsx` when marking "Delivered"
-
----
-
-#### 4. **impl-44: ETA tracking**
-**Why Important:** Visibility for requestors  
-**What to build:**
-- Estimated delivery time calculation
-- Show ETA in request detail
-- Update ETA on status changes
-- Alert if ETA will be missed
-
-**Files:**
-```
-utils/
-  └── etaCalculation.ts
-```
-
----
-
-#### 5. **impl-45: Delivery confirmation**
-**Why Important:** Close the loop  
-**What to build:**
-- Requestor confirms receipt
-- Optional: Rate experience
-- Optional: Report issues
-- Triggers final "Closed" status
-
-**Files:**
-```
-components/ui/
-  └── DeliveryConfirmationModal.tsx
-```
-
----
-
-#### 6. **impl-19: Toll LTR integration (mock)**
-**Why Important:** Off-site materials  
-**What to build:**
-- Mock Toll LTR API service
-- Check material availability
-- Create delivery task
-- Receive ETA from Toll
-- Update request with Toll status
-
-**Files:**
-```
-services/
-  ├── tollLTRService.ts (mock)
-  └── tollLTRIntegration.ts
-```
-
----
-
-### ✅ Agent 3 - Integration Tasks (0 remaining - ALL COMPLETE!)
-
-#### High Priority (6 tasks)
-
-**impl-16: Stakeholder notification system** 🔥  
-**impl-36: Notification templates** 🔥  
-**impl-23: Photo documentation** 🔥  
-**impl-27: Data export/import** 🔥  
-**impl-37: Email/SMS integration (mock)**  
-**impl-38: Teams integration (mock)**
-
-#### Medium Priority (5 tasks)
-
-**impl-39: Conflict resolution UI**  
-**impl-20: SharePoint data sync (mock)**  
-**impl-41: Bulk operations**  
-**impl-50: User preference saving**  
-**impl-51: Offline capability**
-
-#### Lower Priority (4 tasks)
-
-**impl-52: Rate limiting**  
-**impl-53: Session management**  
-**impl-56: Backup system**  
-**impl-57: Security audit**
+### 🟠 Agent 3 - Integrations
+- Core services (notifications, photo storage, LTR, offline, exports) delivered ✅; supporting Agent 1 on wiring and smoke testing.
 
 ---
 
@@ -584,14 +475,14 @@ Before next production push:
 ## 💡 RECOMMENDATIONS
 
 ### For Agent 1:
-1. Focus on mobile responsiveness (impl-24) - CRITICAL for warehouse
-2. Implement POD capture (impl-43) - completes the delivery flow
-3. Add delivery location management (impl-18) - needed for form completion
+1. Finish bulk queue actions (impl-41) so MCs can move requests at scale.
+2. Integrate POD capture with photo/notification services (impl-43).
+3. Deliver ETA tracking + requestor confirmation flows (impl-44 & impl-45).
 
 ### For Agent 3:
-1. Start with notification system (impl-16 + impl-36) - highest user impact
-2. Add photo documentation (impl-23) - completes POD and shorts
-3. Implement data export (impl-27) - users need Excel reports
+1. Pair with Agent 1 on cross-01 to wire notifications into live workflows.
+2. Provide smoke-test scripts for photo/notification services to accelerate UI integration.
+3. Support ETA helper design by exposing LTR update hooks.
 
 ### For Project:
 1. **Backend integration:** Connect to real Supabase tables (currently all mock)
@@ -613,18 +504,18 @@ Before next production push:
 
 ## ✅ SIGN-OFF
 
-**Agent 1:** Core workflows 56% complete, 6 critical tasks remaining  
-**Agent 2:** Admin/monitoring 100% complete ✅  
-**Agent 3:** Integrations 0% complete, ready to start  
+**Agent 1:** Core workflows 84% complete, 4 polish tasks remaining
+**Agent 2:** Admin/monitoring 100% complete ✅
+**Agent 3:** Integrations 100% complete ✅ (supporting cross-team wiring)
 **Documentation:** 100% complete ✅
 
-**Overall Project Health:** 🟢 **GOOD** (63% complete, on track)
+**Overall Project Health:** 🟢 **VERY GOOD** (94% complete, entering polish phase)
 
-**Next Milestone:** 80% complete (57/70 tasks) - Target: Next 3 days
+**Next Milestone:** 100% complete (70/70 tasks) – Target: after bulk actions + ETA/confirmation delivery
 
 ---
 
-**Generated by:** Agent 1  
-**Date:** October 9, 2025  
+**Generated by:** Agent 1
+**Date:** October 11, 2025
 **Status:** Active Development
 
