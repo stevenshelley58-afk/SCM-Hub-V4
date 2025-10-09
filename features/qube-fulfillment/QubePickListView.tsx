@@ -7,23 +7,28 @@ import { ICONS } from '../../components/ui/Icons';
 import { OnHoldModal } from '../../components/ui/OnHoldModal';
 import { CancelRequestModal } from '../../components/ui/CancelRequestModal';
 import { SplitMRFModal } from '../../components/ui/SplitMRFModal';
-import { mockRequestsData } from '../../services/api';
+import { mockRequestsData, users } from '../../services/api';
 import { addStatusHistoryEntry } from '../../utils/statusHelpers';
 import { autoUnlockMaterials } from '../../utils/materialLockHelpers';
+import { hasPermission, canCancelRequest } from '../../utils/permissions';
 // Fix: Corrected import path for types.
-import { MaterialRequest } from '../../types/index';
+import { MaterialRequest, User } from '../../types/index';
 
 interface QubePickListViewProps {
     navigate: (view: string, params?: any) => void;
     openDetailPanel: (request: MaterialRequest) => void;
+    currentUser?: User;
 }
 
-export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
+export const QubePickListView = ({ navigate, currentUser }: QubePickListViewProps) => {
     const [pickListData, setPickListData] = useState<MaterialRequest[]>([]);
     const [refreshKey, setRefreshKey] = useState(0);
     const [onHoldModal, setOnHoldModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
     const [cancelModal, setCancelModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
     const [splitModal, setSplitModal] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
+    
+    // Default to qube user if not provided (for backwards compatibility)
+    const user = currentUser || users.qube;
 
     useEffect(() => {
         const submittedRequests = mockRequestsData.filter(r => r.status === 'Submitted' || r.status === 'Picking') as MaterialRequest[];
@@ -219,16 +224,21 @@ export const QubePickListView = ({ navigate }: QubePickListViewProps) => {
         const handleOnHold = (e: React.MouseEvent) => { e.stopPropagation(); setOnHoldModal({ isOpen: true, request: row }); handleClose(); };
         const handleCancel = (e: React.MouseEvent) => { e.stopPropagation(); setCancelModal({ isOpen: true, request: row }); handleClose(); };
 
+        // Check permissions
+        const canSplit = hasPermission(user, 'split_request');
+        const canPutOnHold = hasPermission(user, 'put_on_hold');
+        const canCancel = canCancelRequest(user, row);
+
         return React.createElement(React.Fragment, null,
             React.createElement('button', { onClick: handleOpen, className: "p-1 rounded-full hover:bg-gray-200 text-gray-500" },
                 React.createElement(ICONS.EllipsisHorizontalIcon, {})
             ),
             // Fix: Added children to Popover call to satisfy required prop
             React.createElement(Popover, { isOpen, anchorEl, onClose: handleClose, className: "p-1" },
-                React.createElement('button', { onClick: handleSplit, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Split Request'),
                 React.createElement('button', { onClick: handlePrint, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Print Pick Slip'),
-                React.createElement('button', { onClick: handleOnHold, className: 'w-full text-left px-3 py-1.5 text-sm text-yellow-700 hover:bg-yellow-50 rounded' }, '⏸️ Put On Hold'),
-                React.createElement('button', { onClick: handleCancel, className: 'w-full text-left px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 rounded' }, '❌ Cancel Request')
+                canSplit && React.createElement('button', { onClick: handleSplit, className: 'w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded' }, 'Split Request'),
+                canPutOnHold && React.createElement('button', { onClick: handleOnHold, className: 'w-full text-left px-3 py-1.5 text-sm text-yellow-700 hover:bg-yellow-50 rounded' }, '⏸️ Put On Hold'),
+                canCancel && React.createElement('button', { onClick: handleCancel, className: 'w-full text-left px-3 py-1.5 text-sm text-red-700 hover:bg-red-50 rounded' }, '❌ Cancel Request')
             )
         );
     };

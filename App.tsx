@@ -66,7 +66,7 @@ const App = () => {
         },
         'picklist': {
             title: 'Warehouse Pick List',
-            component: () => React.createElement(QubePickListView, { openDetailPanel, navigate })
+            component: () => React.createElement(QubePickListView, { openDetailPanel, navigate, currentUser })
         },
         'onhold': {
             title: 'On Hold Requests',
