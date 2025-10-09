@@ -6,6 +6,8 @@ import { P1DashboardView } from './P1DashboardView';
 import { WallDisplayView } from './WallDisplayView';
 import { MCGodModeView } from './MCGodModeView';
 import { SystemConfigView } from './SystemConfigView';
+import { FeatureTogglesView } from './FeatureTogglesView';
+import { MonitoringDashboardView } from './MonitoringDashboardView';
 
 export const AdminControlPanelView: React.FC = () => {
     const [activeSection, setActiveSection] = useState('System Health');
@@ -17,6 +19,8 @@ export const AdminControlPanelView: React.FC = () => {
         { id: 'audit', label: 'Audit Trail', icon: '📋', component: AuditLogView },
         { id: 'godmode', label: 'MC God Mode', icon: '⚡', component: MCGodModeView },
         { id: 'config', label: 'System Config', icon: '⚙️', component: SystemConfigView },
+        { id: 'features', label: 'Feature Toggles', icon: '🎚️', component: FeatureTogglesView },
+        { id: 'monitoring', label: 'Monitoring', icon: '📈', component: MonitoringDashboardView },
         { id: 'wall', label: 'Wall Display', icon: '📺', component: WallDisplayView },
     ];
 
