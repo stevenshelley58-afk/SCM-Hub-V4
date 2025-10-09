@@ -5,6 +5,18 @@ export interface User {
     phone?: string;
 }
 
+export interface DeliveryLocation {
+    id: string;
+    building: string;
+    floor?: string;
+    room?: string;
+    fullAddress: string; // Computed from building + floor + room
+    contactPerson?: string;
+    contactPhone?: string;
+    deliveryInstructions?: string;
+    isActive: boolean;
+}
+
 export interface MaterialRequest {
     id: string;
     status: 'Submitted' | 'Picking' | 'Partial Pick - Open' | 'Partial Pick - Closed' | 'Staged' | 'In Transit' | 'Delivered' | 'On Hold' | 'Cancelled';

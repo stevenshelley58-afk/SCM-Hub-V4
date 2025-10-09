@@ -16,6 +16,31 @@ interface ConfirmationModalProps {
     confirmText?: string;
 }
 
+// Simple reusable Modal component
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: React.ReactNode;
+}
+
+export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+    if (!isOpen) return null;
+    
+    return React.createElement('div', { className: "fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4" },
+        React.createElement('div', { className: "bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" },
+            React.createElement('div', { className: "sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between" },
+                React.createElement('h3', { className: "text-lg font-bold text-gray-900" }, title),
+                React.createElement('button', { 
+                    onClick: onClose,
+                    className: "text-gray-400 hover:text-gray-600 focus:outline-none"
+                }, '×')
+            ),
+            React.createElement('div', { className: "px-6 py-4" }, children)
+        )
+    );
+};
+
 export const ConfirmationModal = ({ isOpen, onCancel, onConfirm, title, children, confirmText = 'Confirm' }: ConfirmationModalProps) => {
     if (!isOpen) return null;
     const isWarning = confirmText.toLowerCase().includes('delete') || confirmText.toLowerCase().includes('unselect');
