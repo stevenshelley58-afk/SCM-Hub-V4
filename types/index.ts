@@ -70,3 +70,41 @@ export interface LockInfo {
     lockedBy: string;
     comment: string;
 }
+
+export interface AuditLogEntry {
+    id: string;
+    timestamp: string;
+    userId: string;
+    userName: string;
+    action: 'status_change' | 'priority_change' | 'manual_override' | 'material_unlock' | 'approval' | 'rejection' | 'cancel' | 'on_hold' | 'resume' | 'short_pick' | 'material_lock' | 'create_request' | 'edit_request' | 'delete_request' | 'permission_change' | 'system_config';
+    entityType: 'material_request' | 'request_item' | 'material' | 'user' | 'system';
+    entityId: string;
+    details: {
+        before?: any;
+        after?: any;
+        reason?: string;
+        notes?: string;
+        [key: string]: any;
+    };
+}
+
+export interface SystemHealthMetrics {
+    timestamp: string;
+    requestBacklog: number;
+    avgFulfillmentTime: number; // in hours
+    shortPickRate: number; // percentage
+    p1RequestCount: number;
+    p1AvgApprovalTime: number; // in minutes
+    activeRequests: number;
+    completedToday: number;
+    overdueRequests: number;
+}
+
+export interface ReportFilter {
+    startDate?: string;
+    endDate?: string;
+    status?: string[];
+    priority?: string[];
+    requestor?: string[];
+    deliveryLocation?: string[];
+}
