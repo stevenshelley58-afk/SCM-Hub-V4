@@ -183,7 +183,7 @@ class PODService {
             });
 
             // Publish delivered event to Materials app if linked to MRF
-            const task = await taskService.getTask(input.task_id);
+            const task = await taskService.getTaskById(input.task_id);
             if (task && task.linked_mrf_id) {
                 await logisticsEventPublisher.publishTaskDelivered(task, data);
             }

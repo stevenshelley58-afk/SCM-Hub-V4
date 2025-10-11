@@ -83,6 +83,24 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
     const totalActive = statusData.reduce((acc, item) => acc + item.value, 0);
     const chartData = statusData.map(d => ({ ...d, total: totalActive }));
     
+    const nowPickingRequest = useMemo(
+        () => mockRequestsData.find(r => r.id === 'MRF-1232') || null,
+        [refreshKey]
+    );
+
+    const nextUpRequest = useMemo(
+        () => mockRequestsData.find(r => r.id === 'MRF-1234') || null,
+        [refreshKey]
+    );
+
+    const safeOpenDetailPanel = (request: MaterialRequest | null) => {
+        if (!request) {
+            console.warn('Attempted to open details for a request that no longer exists in the queue.');
+            return;
+        }
+        openDetailPanel(request);
+    };
+
     const tableColumns = useMemo(() => [
         { accessorKey: 'id', header: 'Request ID', cell: ({value}: {value: string}) => React.createElement('span', { className: 'font-mono font-semibold text-blue-600'}, value) },
         { accessorKey: 'status', header: 'Status', cell: ({value}: {value: string}) => React.createElement(StatusPill, { status: value }) },
@@ -202,16 +220,32 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
                     React.createElement('p', { className: 'text-sm text-gray-600' }, React.createElement('strong', null, '3 of Your Requests'), ' are in the Qube Queue'),
                     React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg border' },
                         React.createElement('p', { className: 'text-xs text-gray-500' }, 'Now Picking:'),
-                        React.createElement('p', { className: 'font-semibold text-gray-800' }, 
-                            React.createElement('a', { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); openDetailPanel(mockRequestsData.find(r => r.id === 'MRF-1232')!); }, className: 'text-blue-600 hover:underline' }, 'MRF-1232'),
-                            React.createElement('span', { className: 'ml-2 px-2 py-0.5 text-xs font-bold text-red-700 bg-red-100 rounded-full' }, 'P1')
+                        React.createElement('p', { className: 'font-semibold text-gray-800' },
+                            React.createElement('a', {
+                                href: '#',
+                                onClick: (e: React.MouseEvent) => {
+                                    e.preventDefault();
+                                    safeOpenDetailPanel(nowPickingRequest);
+                                },
+                                className: `text-blue-600 hover:underline ${nowPickingRequest ? '' : 'pointer-events-none text-gray-400 hover:no-underline'}`,
+                                'aria-disabled': nowPickingRequest ? undefined : true
+                            }, nowPickingRequest ? nowPickingRequest.id : 'No active pick'),
+                            nowPickingRequest && React.createElement('span', { className: 'ml-2 px-2 py-0.5 text-xs font-bold text-red-700 bg-red-100 rounded-full' }, 'P1')
                         )
                     ),
                     React.createElement('div', { className: 'p-3 bg-gray-50 rounded-lg border' },
                         React.createElement('p', { className: 'text-xs text-gray-500' }, 'Next Up:'),
-                        React.createElement('p', { className: 'font-semibold text-gray-800' }, 
-                            React.createElement('a', { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); openDetailPanel(mockRequestsData.find(r => r.id === 'MRF-1234')!); }, className: 'text-blue-600 hover:underline' }, 'MRF-1234'),
-                            React.createElement('span', { className: 'ml-2 px-2 py-0.5 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full' }, 'P2')
+                        React.createElement('p', { className: 'font-semibold text-gray-800' },
+                            React.createElement('a', {
+                                href: '#',
+                                onClick: (e: React.MouseEvent) => {
+                                    e.preventDefault();
+                                    safeOpenDetailPanel(nextUpRequest);
+                                },
+                                className: `text-blue-600 hover:underline ${nextUpRequest ? '' : 'pointer-events-none text-gray-400 hover:no-underline'}`,
+                                'aria-disabled': nextUpRequest ? undefined : true
+                            }, nextUpRequest ? nextUpRequest.id : 'Queue updating'),
+                            nextUpRequest && React.createElement('span', { className: 'ml-2 px-2 py-0.5 text-xs font-semibold text-gray-600 bg-gray-200 rounded-full' }, 'P2')
                         )
                     )
                 )

@@ -1,4 +1,30 @@
+type EnvRecord = Record<string, string | undefined>;
+
+const resolveEnv = (): EnvRecord => {
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env as EnvRecord;
+  }
+
+  if (typeof process !== 'undefined' && (process as any).env) {
+    return (process as any).env as EnvRecord;
+  }
+
+  return {};
+};
+
+const env = resolveEnv();
+
+const supabaseUrl =
+  env.VITE_SUPABASE_URL ??
+  env.NEXT_PUBLIC_SUPABASE_URL ??
+  env.SUPABASE_URL;
+
+const supabaseAnonKey =
+  env.VITE_SUPABASE_ANON_KEY ??
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+  env.SUPABASE_ANON_KEY;
+
 export const config = {
-  supabaseUrl: "https://qygcwfhtzgrhllegnxaw.supabase.co",
-  supabaseAnonKey: "2735551a978a78882e4c40249a20fcce39ad160f6b73c3cef1fe56f8913618b0",
+  supabaseUrl,
+  supabaseAnonKey,
 };

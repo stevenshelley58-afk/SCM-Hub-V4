@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { taskService } from '../../services/logistics/taskService';
+import { taskService, type UpdateTaskInput } from '../../services/logistics/taskService';
 import { podService } from '../../services/logistics/podService';
 import { PODCaptureModal } from '../../components/logistics/PODCaptureModal';
 import type { LogisticsTask, PODRecord } from '../../types';
@@ -47,7 +47,7 @@ export const LogisticsDriverView: React.FC<{ driverId: string }> = ({ driverId }
 
     const handleArrival = async (taskId: string, location: 'pickup' | 'dropoff') => {
         try {
-            const updates: any = {
+            const updates: UpdateTaskInput = {
                 task_id: taskId,
             };
             
