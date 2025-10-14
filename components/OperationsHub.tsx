@@ -21,7 +21,7 @@ const site = {
   apps: [
     { id: "mrf", name: "MRF App", tagline: "Request, pick, track. Fast.", view: "wo-materials", status: "live", icon: "clipboard-list", accent: "teal" },
     { id: "placeholders", name: "Placeholders", tagline: "Shared fields and templates.", view: "material-requests", status: "beta", icon: "brackets", accent: "slate" },
-    { id: "toll", name: "Toll Task Request", tagline: "Delivery and collection tasks.", view: "picklist", status: "live", icon: "truck", accent: "amber" },
+    { id: "toll", name: "Toll Task Request", tagline: "Delivery and collection tasks.", view: "logistics-dispatcher", status: "live", icon: "truck", accent: "amber" },
     { id: "tetra", name: "Tetra Radio Request", tagline: "Issue and track radios.", view: "picking", status: "beta", icon: "radio", accent: "violet" },
     { id: "fm", name: "Facility Maintenance", tagline: "Raise and monitor work orders.", view: "ac-scope-command", status: "planned", icon: "wrench", accent: "blue" },
     { id: "coates", name: "Coates Tooling", tagline: "Hire and return tooling.", view: "control-panel", status: "planned", icon: "tool", accent: "orange" },
@@ -83,6 +83,8 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<typeof hubUsers[0] | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showTollModal, setShowTollModal] = useState(false);
+  const [selectedTollUser, setSelectedTollUser] = useState<typeof hubUsers[0] | null>(null);
 
   const handleQuickAction = (action: typeof site.quickActions[0]) => {
     if (action.label === "Open MRF") {
@@ -97,6 +99,9 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     if (app.id === "mrf") {
       setShowModal(true);
       setSelectedUser(null);
+    } else if (app.id === "toll") {
+      setShowTollModal(true);
+      setSelectedTollUser(null);
     } else {
       onNavigate(app.view);
     }
@@ -122,6 +127,26 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     setShowModal(false);
     onUserChange(actualUser);
     onNavigate("wo-materials");
+  };
+
+  const handleTollModalContinue = () => {
+    if (!selectedTollUser) return;
+
+    const actualUser = users[selectedTollUser.id as keyof typeof users];
+    if (!actualUser) {
+      console.error("User not found:", selectedTollUser.id);
+      return;
+    }
+
+    try {
+      localStorage.setItem("toll_session_user", JSON.stringify(selectedTollUser));
+    } catch (error) {
+      console.warn("Unable to persist user", error);
+    }
+
+    setShowTollModal(false);
+    onUserChange(actualUser);
+    onNavigate("logistics-dispatcher");
   };
 
   const filteredUsers = hubUsers.filter(user =>
@@ -243,6 +268,53 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
             className: "btn-primary",
             disabled: !selectedUser,
             onClick: handleModalContinue
+          }, "Continue")
+        )
+      )
+    ),
+
+    // Toll User Selection Modal
+    showTollModal && React.createElement('div', { 
+      className: "modal-overlay",
+      onClick: (e) => e.target === e.currentTarget && setShowTollModal(false)
+    },
+      React.createElement('div', { className: "modal-panel" },
+        React.createElement('header', { className: "modal-header" },
+          React.createElement('h2', null, "Select user"),
+          React.createElement('p', { className: "modal-subtitle" }, "Choose your user context for the Toll Task Request app.")
+        ),
+        React.createElement('div', { className: "modal-body" },
+          React.createElement('div', { className: "modal-search" },
+            React.createElement('input', {
+              type: "search",
+              placeholder: "Search users…",
+              value: searchTerm,
+              onChange: (e) => setSearchTerm(e.target.value)
+            })
+          ),
+          React.createElement('ul', { className: "user-list" },
+            filteredUsers.map((user) =>
+              React.createElement('li', {
+                key: user.id,
+                className: `user-item ${selectedTollUser?.id === user.id ? 'selected' : ''}`,
+                onClick: () => setSelectedTollUser(user)
+              },
+                React.createElement('div', { className: "user-info" },
+                  React.createElement('p', { className: "user-name" }, user.role)
+                )
+              )
+            )
+          )
+        ),
+        React.createElement('footer', { className: "modal-footer" },
+          React.createElement('button', {
+            className: "btn-secondary",
+            onClick: () => setShowTollModal(false)
+          }, "Cancel"),
+          React.createElement('button', {
+            className: "btn-primary",
+            disabled: !selectedTollUser,
+            onClick: handleTollModalContinue
           }, "Continue")
         )
       )
