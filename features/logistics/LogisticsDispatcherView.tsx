@@ -131,7 +131,7 @@ export const LogisticsDispatcherView: React.FC = () => {
                         + Create Task
                     </button>
                 </div>
-            </div>
+            
 
             <TaskFilters
                 searchTerm={searchTerm}
