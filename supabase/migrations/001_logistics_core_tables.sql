@@ -1,4 +1,4 @@
--- Toll Task Request (Logistics App) - Core Database Schema
+-- Logistics Task Request (Logistics App) - Core Database Schema
 -- Migration 001: Core Tables
 -- Created: 2025-10-09
 

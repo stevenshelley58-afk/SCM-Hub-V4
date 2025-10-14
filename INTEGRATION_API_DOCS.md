@@ -111,7 +111,7 @@ Resolve a detected conflict.
 ## LTR Integration Service
 
 ### Purpose
-Integrate with Toll's Logistics Task Router (LTR) system for delivery task management.
+Integrate with the Logistics Task Router (LTR) system for delivery task management.
 
 ### Key Functions
 

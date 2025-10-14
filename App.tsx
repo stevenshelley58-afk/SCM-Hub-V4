@@ -22,8 +22,8 @@ import { KeyboardShortcutsModal } from './components/ui/KeyboardShortcutsModal';
 import { LogisticsDispatcherView } from './features/logistics/LogisticsDispatcherView';
 import { LogisticsDriverView } from './features/logistics/LogisticsDriverView';
 import { LogisticsConfigView } from './features/logistics/LogisticsConfigView';
-import { TTRRequestView } from './features/logistics/TTRRequestView';
-import { TTRMyRequestsView } from './features/logistics/TTRMyRequestsView';
+import { LTRRequestView } from './features/logistics/LTRRequestView';
+import { LTRMyRequestsView } from './features/logistics/LTRMyRequestsView';
 import { LogisticsReportsView } from './features/logistics/LogisticsReportsView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
@@ -165,13 +165,13 @@ const App = () => {
             component: () => React.createElement(LogisticsReportsView, {})
         }
         ,
-        'ttr-request': {
-            title: 'New Toll Task',
-            component: () => React.createElement(TTRRequestView, { currentUser })
+        'ltr-request': {
+            title: 'New Logistics Task Request',
+            component: () => React.createElement(LTRRequestView, { currentUser })
         },
-        'ttr-my-requests': {
-            title: 'My Toll Requests',
-            component: () => React.createElement(TTRMyRequestsView, { currentUser })
+        'ltr-my-requests': {
+            title: 'My Logistics Requests',
+            component: () => React.createElement(LTRMyRequestsView, { currentUser })
         }
     };
 

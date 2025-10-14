@@ -318,7 +318,7 @@ export interface IntegrationConfig {
         sync_interval_seconds: number;
     };
     
-    // Toll LTR
+    // LTR (Toll provider)
     toll_ltr: {
         enabled: boolean;
         api_url?: string;
