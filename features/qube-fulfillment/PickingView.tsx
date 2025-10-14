@@ -10,7 +10,7 @@ import { mockRequestItems, mockRequestsData, exceptionReasons, shortReasons, use
 // Fix: Corrected import path for types.
 import { RequestItem, MaterialRequest, PODData } from '../../types/index';
 import { uploadPhoto } from '../../services/photoService';
-import { isOnline, queueOfflineAction } from '../../services/offlineService';
+import { isOnline, queueOfflineOperation } from '../../services/offlineService';
 import { sendNotification } from '../../services/notificationService';
 import { logAuditEntry } from '../../services/auditService';
 
@@ -259,12 +259,7 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
                     } else {
                         // Queue for offline sync
                         console.log('📴 Offline - queueing POD for sync');
-                        await queueOfflineAction({
-                            type: 'POD_UPLOAD',
-                            requestId: request.id,
-                            data: podData,
-                            timestamp: new Date().toISOString()
-                        });
+                        queueOfflineOperation('create', '/pod/upload', { requestId: request.id, data: podData });
                         alert('⚠️ Offline mode: POD will be uploaded when connection is restored');
                     }
                     
