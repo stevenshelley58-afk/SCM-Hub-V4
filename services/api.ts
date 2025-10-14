@@ -233,8 +233,8 @@ export const shortReasons = ['Item Damaged', 'Quantity Mismatch', 'Location Empt
 
 export const navLinks: { [key: string]: { view: string; label: string; icon: string }[] } = {
     requestor: [
-        { view: 'wo-materials', label: 'WO Materials', icon: 'DocumentTextIcon' },
-        { view: 'material-requests', label: 'Material Requests', icon: 'RocketLaunchIcon' }
+        { view: 'ttr-request', label: 'New Toll Task', icon: 'RocketLaunchIcon' },
+        { view: 'ttr-my-requests', label: 'My Toll Requests', icon: 'QueueListIcon' }
     ],
     ac: [
         { view: 'ac-scope-command', label: 'My Scope Dashboard', icon: 'ChartPieIcon' },

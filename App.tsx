@@ -22,6 +22,8 @@ import { KeyboardShortcutsModal } from './components/ui/KeyboardShortcutsModal';
 import { LogisticsDispatcherView } from './features/logistics/LogisticsDispatcherView';
 import { LogisticsDriverView } from './features/logistics/LogisticsDriverView';
 import { LogisticsConfigView } from './features/logistics/LogisticsConfigView';
+import { TTRRequestView } from './features/logistics/TTRRequestView';
+import { TTRMyRequestsView } from './features/logistics/TTRMyRequestsView';
 import { LogisticsReportsView } from './features/logistics/LogisticsReportsView';
 import { users, navLinks } from './services/api';
 // Fix: Corrected import path for types.
@@ -161,6 +163,15 @@ const App = () => {
         'logistics-reports': {
             title: 'Reports & Analytics',
             component: () => React.createElement(LogisticsReportsView, {})
+        }
+        ,
+        'ttr-request': {
+            title: 'New Toll Task',
+            component: () => React.createElement(TTRRequestView, { currentUser })
+        },
+        'ttr-my-requests': {
+            title: 'My Toll Requests',
+            component: () => React.createElement(TTRMyRequestsView, { currentUser })
         }
     };
 

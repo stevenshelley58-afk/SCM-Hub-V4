@@ -39,7 +39,8 @@ const hubUsers = [
 // TTR-specific users for Toll Task Request app
 const ttrUsers = [
   { id: "mlc", role: "Logistics Coordinator" },
-  { id: "driver", role: "Driver" }
+  { id: "driver", role: "Driver" },
+  { id: "requestor", role: "Requestor" }
 ];
 
 const icons = {
@@ -152,7 +153,13 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
 
     setShowTollModal(false);
     onUserChange(actualUser);
-    onNavigate(selectedTollUser.id === 'driver' ? 'logistics-driver' : 'logistics-dispatcher');
+    onNavigate(
+      selectedTollUser.id === 'driver'
+        ? 'logistics-driver'
+        : selectedTollUser.id === 'requestor'
+          ? 'ttr-request'
+          : 'logistics-dispatcher'
+    );
   };
 
   const filteredUsers = hubUsers.filter(user =>
