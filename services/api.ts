@@ -254,7 +254,7 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'integrations', label: 'Integrations', icon: 'CloudIcon' }
     ],
     mlc: [
-        { view: 'logistics-dispatcher', label: 'Task Dispatcher', icon: 'TruckIcon' },
+        { view: 'logistics-dispatcher', label: 'MLC Console', icon: 'TruckIcon' },
         { view: 'logistics-reports', label: 'Reports & Analytics', icon: 'ChartBarIcon' },
         { view: 'logistics-config', label: 'Configuration', icon: 'Cog8ToothIcon' },
         { view: 'material-requests', label: 'Material Requests', icon: 'RocketLaunchIcon' }

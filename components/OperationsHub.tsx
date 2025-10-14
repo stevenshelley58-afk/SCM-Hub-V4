@@ -36,6 +36,12 @@ const hubUsers = [
   { id: "mc", role: "Material Coordinator" }
 ];
 
+// TTR-specific users for Toll Task Request app
+const ttrUsers = [
+  { id: "mlc", role: "Logistics Coordinator" },
+  { id: "driver", role: "Driver" }
+];
+
 const icons = {
   "clipboard-list": "M9 12h6m-3-3v6m9-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
   "plus-square": "M9 12h6m-3-3v6m9-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
@@ -146,10 +152,14 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
 
     setShowTollModal(false);
     onUserChange(actualUser);
-    onNavigate("logistics-dispatcher");
+    onNavigate(selectedTollUser.id === 'driver' ? 'logistics-driver' : 'logistics-dispatcher');
   };
 
   const filteredUsers = hubUsers.filter(user =>
+    user.role.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredTTRUsers = ttrUsers.filter(user =>
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -293,7 +303,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
             })
           ),
           React.createElement('ul', { className: "user-list" },
-            filteredUsers.map((user) =>
+            filteredTTRUsers.map((user) =>
               React.createElement('li', {
                 key: user.id,
                 className: `user-item ${selectedTollUser?.id === user.id ? 'selected' : ''}`,

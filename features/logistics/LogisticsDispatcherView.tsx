@@ -114,7 +114,7 @@ export const LogisticsDispatcherView: React.FC = () => {
                 alignItems: 'center',
                 marginBottom: '20px' 
             }}>
-                <h1>📦 Logistics Dispatcher</h1>
+                <h1>📦 MLC Console</h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button
                         onClick={() => setShowCreateModal(true)}
