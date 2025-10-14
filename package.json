@@ -9,7 +9,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "sync": "powershell -ExecutionPolicy Bypass -File ./git-sync.ps1 -Message 'chore: sync'",
+    "sync:deploy": "powershell -ExecutionPolicy Bypass -File ./git-sync.ps1 -Message 'chore: sync+deploy' -Deploy",
+    "auto-push": "powershell -ExecutionPolicy Bypass -File ./utils/auto-push.ps1 -IntervalSeconds 120 -Message 'chore: auto-push'"
   },
   "dependencies": {
     "react": "^18.2.0",

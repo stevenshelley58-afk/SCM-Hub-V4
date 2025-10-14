@@ -314,7 +314,7 @@ class TaskService {
             });
 
             // Publish event to Materials app if linked to MRF
-            const task = await this.getTask(taskId);
+            const task = await this.getTaskById(taskId);
             if (task && task.linked_mrf_id && task.driver && task.vehicle) {
                 await logisticsEventPublisher.publishTaskAccepted(
                     task,
