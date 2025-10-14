@@ -1,4 +1,4 @@
-// Toll LTR (Logistics Task Router) Integration Service
+// Logistics Task Router (LTR) Integration Service
 // In production, this would connect to the actual LTR system API
 
 export interface LTRDeliveryTask {

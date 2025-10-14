@@ -272,7 +272,7 @@ export const WOMaterialView = ({ openDetailPanel, currentUser }: WOMaterialsView
                         className: 'flex items-center space-x-2 w-full text-left px-3 py-1.5 text-sm text-purple-700 hover:bg-purple-50 rounded'
                     }, 
                         React.createElement('span', { className: 'text-lg' }, '🚚'),
-                        React.createElement('span', null, 'Order from Toll LTR')
+                        React.createElement('span', null, 'Order via LTR')
                     )
                 ])
             )

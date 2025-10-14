@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { User } from '../types/index';
 import { users } from '../services/api';
 import '../hub-styles.css';
@@ -21,7 +21,7 @@ const site = {
   apps: [
     { id: "mrf", name: "MRF App", tagline: "Request, pick, track. Fast.", view: "wo-materials", status: "live", icon: "clipboard-list", accent: "teal" },
     { id: "placeholders", name: "Placeholders", tagline: "Shared fields and templates.", view: "material-requests", status: "beta", icon: "brackets", accent: "slate" },
-    { id: "toll", name: "Toll Task Request", tagline: "Delivery and collection tasks.", view: "logistics-dispatcher", status: "live", icon: "truck", accent: "amber" },
+    { id: "ltr", name: "Logistics Task Request", tagline: "Delivery and collection tasks.", view: "logistics-dispatcher", status: "live", icon: "truck", accent: "amber" },
     { id: "tetra", name: "Tetra Radio Request", tagline: "Issue and track radios.", view: "picking", status: "beta", icon: "radio", accent: "violet" },
     { id: "fm", name: "Facility Maintenance", tagline: "Raise and monitor work orders.", view: "ac-scope-command", status: "planned", icon: "wrench", accent: "blue" },
     { id: "coates", name: "Coates Tooling", tagline: "Hire and return tooling.", view: "control-panel", status: "planned", icon: "tool", accent: "orange" },
@@ -36,8 +36,8 @@ const hubUsers = [
   { id: "mc", role: "Material Coordinator" }
 ];
 
-// TTR-specific users for Toll Task Request app
-const ttrUsers = [
+// LTR-specific users for Logistics Task Request app
+const ltrUsers = [
   { id: "mlc", role: "Logistics Coordinator" },
   { id: "driver", role: "Driver" },
   { id: "requestor", role: "Requestor" }
@@ -90,8 +90,20 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
   const [showModal, setShowModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<typeof hubUsers[0] | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showTollModal, setShowTollModal] = useState(false);
-  const [selectedTollUser, setSelectedTollUser] = useState<typeof hubUsers[0] | null>(null);
+  const [showLTRModal, setShowLTRModal] = useState(false);
+  const [selectedLTRUser, setSelectedLTRUser] = useState<typeof hubUsers[0] | null>(null);
+
+  useEffect(() => {
+    try {
+      const legacyUser = localStorage.getItem('toll_session_user');
+      if (legacyUser && !localStorage.getItem('ltr_session_user')) {
+        localStorage.setItem('ltr_session_user', legacyUser);
+        localStorage.removeItem('toll_session_user');
+      }
+    } catch (error) {
+      console.warn('Unable to migrate legacy LTR session user', error);
+    }
+  }, []);
 
   const handleQuickAction = (action: typeof site.quickActions[0]) => {
     if (action.label === "Open MRF") {
@@ -106,9 +118,9 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     if (app.id === "mrf") {
       setShowModal(true);
       setSelectedUser(null);
-    } else if (app.id === "toll") {
-      setShowTollModal(true);
-      setSelectedTollUser(null);
+    } else if (app.id === "ltr") {
+      setShowLTRModal(true);
+      setSelectedLTRUser(null);
     } else {
       onNavigate(app.view);
     }
@@ -136,28 +148,28 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     onNavigate("wo-materials");
   };
 
-  const handleTollModalContinue = () => {
-    if (!selectedTollUser) return;
+  const handleLTRModalContinue = () => {
+    if (!selectedLTRUser) return;
 
-    const actualUser = users[selectedTollUser.id as keyof typeof users];
+    const actualUser = users[selectedLTRUser.id as keyof typeof users];
     if (!actualUser) {
-      console.error("User not found:", selectedTollUser.id);
+      console.error("User not found:", selectedLTRUser.id);
       return;
     }
 
     try {
-      localStorage.setItem("toll_session_user", JSON.stringify(selectedTollUser));
+      localStorage.setItem("ltr_session_user", JSON.stringify(selectedLTRUser));
     } catch (error) {
       console.warn("Unable to persist user", error);
     }
 
-    setShowTollModal(false);
+    setShowLTRModal(false);
     onUserChange(actualUser);
     onNavigate(
-      selectedTollUser.id === 'driver'
+      selectedLTRUser.id === 'driver'
         ? 'logistics-driver'
-        : selectedTollUser.id === 'requestor'
-          ? 'ttr-request'
+        : selectedLTRUser.id === 'requestor'
+          ? 'ltr-request'
           : 'logistics-dispatcher'
     );
   };
@@ -166,7 +178,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredTTRUsers = ttrUsers.filter(user =>
+  const filteredLTRUsers = ltrUsers.filter(user =>
     user.role.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -290,15 +302,15 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
       )
     ),
 
-    // Toll User Selection Modal
-    showTollModal && React.createElement('div', { 
+    // Logistics Task Request User Selection Modal
+    showLTRModal && React.createElement('div', {
       className: "modal-overlay",
-      onClick: (e) => e.target === e.currentTarget && setShowTollModal(false)
+      onClick: (e) => e.target === e.currentTarget && setShowLTRModal(false)
     },
       React.createElement('div', { className: "modal-panel" },
         React.createElement('header', { className: "modal-header" },
           React.createElement('h2', null, "Select user"),
-          React.createElement('p', { className: "modal-subtitle" }, "Choose your user context for the Toll Task Request app.")
+          React.createElement('p', { className: "modal-subtitle" }, "Choose your user context for the Logistics Task Request app.")
         ),
         React.createElement('div', { className: "modal-body" },
           React.createElement('div', { className: "modal-search" },
@@ -310,11 +322,11 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
             })
           ),
           React.createElement('ul', { className: "user-list" },
-            filteredTTRUsers.map((user) =>
+            filteredLTRUsers.map((user) =>
               React.createElement('li', {
                 key: user.id,
-                className: `user-item ${selectedTollUser?.id === user.id ? 'selected' : ''}`,
-                onClick: () => setSelectedTollUser(user)
+                className: `user-item ${selectedLTRUser?.id === user.id ? 'selected' : ''}`,
+                onClick: () => setSelectedLTRUser(user)
               },
                 React.createElement('div', { className: "user-info" },
                   React.createElement('p', { className: "user-name" }, user.role)
@@ -326,12 +338,12 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
         React.createElement('footer', { className: "modal-footer" },
           React.createElement('button', {
             className: "btn-secondary",
-            onClick: () => setShowTollModal(false)
+            onClick: () => setShowLTRModal(false)
           }, "Cancel"),
           React.createElement('button', {
             className: "btn-primary",
-            disabled: !selectedTollUser,
-            onClick: handleTollModalContinue
+            disabled: !selectedLTRUser,
+            onClick: handleLTRModalContinue
           }, "Continue")
         )
       )

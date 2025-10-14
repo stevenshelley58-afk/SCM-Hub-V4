@@ -3,7 +3,7 @@ import type { User, LogisticsTaskType, LogisticsTaskPriority, LogisticsLocation 
 import { taskService } from '../../services/logistics/taskService';
 import { getActiveWhitelistEntries, isWhitelisted } from '../../services/whitelistService';
 
-export const TTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser }) => {
+export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser }) => {
     const [type, setType] = useState<LogisticsTaskType>('delivery');
     const [priority, setPriority] = useState<LogisticsTaskPriority>('normal');
     const [description, setDescription] = useState('');
@@ -62,7 +62,7 @@ export const TTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>New Toll Task Request</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>New Logistics Task Request</h1>
             {error && <div style={{ background: '#ffdddd', padding: 12, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
             {success && <div style={{ background: '#ddffdd', padding: 12, borderRadius: 8, marginBottom: 12 }}>{success}</div>}
 

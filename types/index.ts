@@ -70,8 +70,8 @@ export interface MaterialRequest {
         feedback?: string;
         issuesReported?: string;
     };
-    tollTaskId?: string; // Linked Toll LTR task ID
-    tollStatus?: 'pending' | 'accepted' | 'in_transit' | 'delivered' | 'cancelled' | 'failed'; // Toll task status
+    tollTaskId?: string; // Linked LTR task ID
+    tollStatus?: 'pending' | 'accepted' | 'in_transit' | 'delivered' | 'cancelled' | 'failed'; // External task status
 }
 
 export interface RequestItem {
@@ -158,7 +158,7 @@ export interface DeliveryPhoto {
 }
 
 // ============================================================================
-// LOGISTICS APP (Toll Task Request) TYPES
+// LOGISTICS APP (Logistics Task Request) TYPES
 // ============================================================================
 
 export type LogisticsTaskType = 'delivery' | 'collection' | 'container_move' | 'yard_work' | 'project_move' | 'backload' | 'adhoc';
