@@ -23,7 +23,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
         setSuccess(null);
 
         if (!description.trim() || !requestedDate || !pickup || !dropoff) {
-            setError('Please complete all required fields');
+            setError('Please complete all required fields for the Logistics Task Router request.');
             return;
         }
 
@@ -31,7 +31,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
         const requestorKey = (currentUser.name || '').toLowerCase().includes('@') ? currentUser.name : `${currentUser.name}@company.com`;
         const allowed = isWhitelisted('requestor', requestorKey) || isWhitelisted('requestor', (currentUser as any).email || '');
         if (!allowed) {
-            setError('You are not on the approved requestor list. Please contact MLC.');
+            setError('You are not on the approved Logistics Task Router requestor list. Please contact MLC.');
             return;
         }
 
@@ -46,7 +46,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
                 dropoff: { location: dropoff },
                 requested_date: new Date(requestedDate).toISOString()
             });
-            setSuccess('Request submitted successfully');
+            setSuccess('Logistics Task Router request submitted successfully.');
             setDescription('');
             setRequestedDate('');
             setPickup('');
@@ -54,7 +54,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
             setContactName('');
             setContactPhone('');
         } catch (e: any) {
-            setError(e.message || 'Failed to submit request');
+            setError(e.message || 'Failed to submit Logistics Task Router request.');
         } finally {
             setSubmitting(false);
         }
@@ -62,7 +62,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>New Logistics Task Request</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16 }}>Logistics Task Router – Create Task</h1>
             {error && <div style={{ background: '#ffdddd', padding: 12, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
             {success && <div style={{ background: '#ddffdd', padding: 12, borderRadius: 8, marginBottom: 12 }}>{success}</div>}
 
@@ -119,7 +119,7 @@ export const LTRRequestView: React.FC<{ currentUser: User }> = ({ currentUser })
 
                 <button onClick={handleSubmit} disabled={submitting || !description || !requestedDate || !pickup || !dropoff}
                     style={{ padding: '12px 16px', background: submitting ? '#888' : '#0066cc', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, cursor: submitting ? 'not-allowed' : 'pointer' }}>
-                    {submitting ? 'Submitting…' : 'Submit Request'}
+                    {submitting ? 'Submitting…' : 'Submit Task'}
                 </button>
             </div>
         </div>

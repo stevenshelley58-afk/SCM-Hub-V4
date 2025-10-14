@@ -158,7 +158,7 @@ export interface DeliveryPhoto {
 }
 
 // ============================================================================
-// LOGISTICS APP (Logistics Task Request) TYPES
+// LOGISTICS APP (Logistics Task Router) TYPES
 // ============================================================================
 
 export type LogisticsTaskType = 'delivery' | 'collection' | 'container_move' | 'yard_work' | 'project_move' | 'backload' | 'adhoc';

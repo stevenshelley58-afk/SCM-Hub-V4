@@ -166,11 +166,11 @@ const App = () => {
         }
         ,
         'ltr-request': {
-            title: 'New Logistics Task Request',
+            title: 'Logistics Task Router – New Task',
             component: () => React.createElement(LTRRequestView, { currentUser })
         },
         'ltr-my-requests': {
-            title: 'My Logistics Requests',
+            title: 'Logistics Task Router – My Requests',
             component: () => React.createElement(LTRMyRequestsView, { currentUser })
         }
     };

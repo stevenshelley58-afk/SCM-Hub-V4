@@ -1,4 +1,4 @@
--- Logistics Task Request (Logistics App) - Row-Level Security Policies
+-- Logistics Task Router (Logistics App) - Row-Level Security Policies
 -- Migration 002: RLS Policies
 -- Created: 2025-10-09
 
