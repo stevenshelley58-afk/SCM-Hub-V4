@@ -21,7 +21,7 @@ const site = {
   apps: [
     { id: "mrf", name: "MRF App", tagline: "Request, pick, track. Fast.", view: "wo-materials", status: "live", icon: "clipboard-list", accent: "teal" },
     { id: "placeholders", name: "Placeholders", tagline: "Shared fields and templates.", view: "material-requests", status: "beta", icon: "brackets", accent: "slate" },
-    { id: "ltr", name: "Logistics Task Request", tagline: "Delivery and collection tasks.", view: "logistics-dispatcher", status: "live", icon: "truck", accent: "amber" },
+    { id: "ltr", name: "Logistics Task Router", tagline: "Delivery and collection tasks.", view: "logistics-dispatcher", status: "live", icon: "truck", accent: "amber" },
     { id: "tetra", name: "Tetra Radio Request", tagline: "Issue and track radios.", view: "picking", status: "beta", icon: "radio", accent: "violet" },
     { id: "fm", name: "Facility Maintenance", tagline: "Raise and monitor work orders.", view: "ac-scope-command", status: "planned", icon: "wrench", accent: "blue" },
     { id: "coates", name: "Coates Tooling", tagline: "Hire and return tooling.", view: "control-panel", status: "planned", icon: "tool", accent: "orange" },
@@ -36,7 +36,7 @@ const hubUsers = [
   { id: "mc", role: "Material Coordinator" }
 ];
 
-// LTR-specific users for Logistics Task Request app
+// LTR-specific users for Logistics Task Router app
 const ltrUsers = [
   { id: "mlc", role: "Logistics Coordinator" },
   { id: "driver", role: "Driver" },
@@ -302,7 +302,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
       )
     ),
 
-    // Logistics Task Request User Selection Modal
+    // Logistics Task Router User Selection Modal
     showLTRModal && React.createElement('div', {
       className: "modal-overlay",
       onClick: (e) => e.target === e.currentTarget && setShowLTRModal(false)
@@ -310,7 +310,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
       React.createElement('div', { className: "modal-panel" },
         React.createElement('header', { className: "modal-header" },
           React.createElement('h2', null, "Select user"),
-          React.createElement('p', { className: "modal-subtitle" }, "Choose your user context for the Logistics Task Request app.")
+          React.createElement('p', { className: "modal-subtitle" }, "Choose your user context for the Logistics Task Router app.")
         ),
         React.createElement('div', { className: "modal-body" },
           React.createElement('div', { className: "modal-search" },
