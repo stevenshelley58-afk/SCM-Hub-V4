@@ -12,7 +12,7 @@ import { RequestItem, MaterialRequest, PODData } from '../../types/index';
 import { uploadPhoto } from '../../services/photoService';
 import { isOnline, queueOfflineAction } from '../../services/offlineService';
 import { sendNotification } from '../../services/notificationService';
-import { addAuditEntry } from '../../services/auditService';
+import { logAuditEntry } from '../../services/auditService';
 
 interface PickingViewProps {
     params: { request: MaterialRequest } | null;
@@ -224,11 +224,12 @@ export const PickingView = ({ params, navigate }: PickingViewProps) => {
                         // For now, just log that we're using the service
                         
                         // Add audit entry
-                        addAuditEntry({
-                            requestId: request.id,
-                            action: 'POD_CAPTURED',
-                            performedBy: users.qube.name,
-                            timestamp: new Date().toISOString(),
+                        logAuditEntry({
+                            userId: 'qube',
+                            userName: users.qube.name,
+                            action: 'pod_captured',
+                            entityType: 'material_request',
+                            entityId: request.id,
                             details: {
                                 photoCount: podData.photos.length,
                                 hasSignature: !!podData.signature,
