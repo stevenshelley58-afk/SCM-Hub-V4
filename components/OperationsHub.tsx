@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import type { User } from '../types/index';
-import { users } from '../services/api';
+import { users, navLinks } from '../services/api';
 import '../hub-styles.css';
 
 interface OperationsHubProps {
@@ -145,7 +145,9 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     
     setShowModal(false);
     onUserChange(actualUser);
-    onNavigate("wo-materials");
+
+    const defaultView = navLinks[actualUser.id]?.[0]?.view || 'control-panel';
+    onNavigate(defaultView);
   };
 
   const handleLTRModalContinue = () => {
