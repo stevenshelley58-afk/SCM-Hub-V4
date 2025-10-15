@@ -38,7 +38,7 @@ export const MaterialRequestView = ({ openDetailPanel }: MaterialRequestsViewPro
         issueDescription?: string;
         issuePhotos?: string[];
     }) => {
-        const currentUser = { id: 'requestor', name: 'Requestor', role: 'Requestor' };
+        const currentUser = { id: 'requestor_mrf', name: 'Requestor - MRF', role: 'Requestor - MRF' } as any;
 
         if (data.hasIssue) {
             // Report issue - reopen the request or create a follow-up

@@ -5,7 +5,9 @@ import { User, MaterialRequest, DeliveryLocation } from '../types/index';
 
 // --- DATA STORE ---
 export const users: { [key: string]: User} = {
-    requestor: { id: 'requestor', name: 'Requestor', role: 'Requestor', phone: '555-123-4567' },
+    requestor: { id: 'requestor', name: 'Requestor (Legacy)', role: 'Requestor', phone: '555-123-4567' },
+    requestor_mrf: { id: 'requestor_mrf', name: 'Requestor - MRF', role: 'Requestor - MRF' },
+    requestor_ltr: { id: 'requestor_ltr', name: 'Requestor - Logistics', role: 'Requestor - Logistics' },
     ac: { id: 'ac', name: 'Area Coordinator', role: 'Area Coordinator' },
     qube: { id: 'qube', name: 'Qube User', role: 'Qube User' },
     mc: { id: 'mc', name: 'Material Coordinator', role: 'Material Coordinator' },
@@ -232,7 +234,11 @@ export const exceptionReasons = ['Item Damaged', 'Quantity Mismatch', 'Location 
 export const shortReasons = ['Item Damaged', 'Quantity Mismatch', 'Location Empty', 'Wrong Item in Location', 'Quarantine', 'Other'];
 
 export const navLinks: { [key: string]: { view: string; label: string; icon: string }[] } = {
-    requestor: [
+    requestor_mrf: [
+        { view: 'wo-materials', label: 'WO Materials', icon: 'DocumentTextIcon' },
+        { view: 'material-requests', label: 'My Material Requests', icon: 'RocketLaunchIcon' }
+    ],
+    requestor_ltr: [
         { view: 'ltr-request', label: 'New Logistics Task', icon: 'RocketLaunchIcon' },
         { view: 'ltr-my-requests', label: 'My Logistics Requests', icon: 'QueueListIcon' }
     ],

@@ -1,5 +1,5 @@
 export interface User {
-    id: 'requestor' | 'ac' | 'qube' | 'mc' | 'mlc' | 'driver';
+    id: 'requestor' | 'requestor_mrf' | 'requestor_ltr' | 'ac' | 'qube' | 'mc' | 'mlc' | 'driver';
     name: string;
     role: string;
     phone?: string;

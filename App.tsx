@@ -38,7 +38,7 @@ const PlaceholderView = ({ user }: { user: User }) => React.createElement('div',
 );
 
 const App = () => {
-    const [currentUser, setCurrentUser] = useState<User>(users.requestor);
+    const [currentUser, setCurrentUser] = useState<User>(users.requestor_mrf);
     const [currentView, setCurrentView] = useState('hub');
     const [viewParams, setViewParams] = useState<any>(null);
     const [detailPanel, setDetailPanel] = useState<{ isOpen: boolean; request: MaterialRequest | null }>({ isOpen: false, request: null });
@@ -61,7 +61,7 @@ const App = () => {
             },
             onNewRequest: () => {
                 // Navigate to WO Materials view to create new request
-                if (currentUser.id === 'requestor' || currentUser.id === 'ac') {
+                if (currentUser.id === 'requestor_mrf' || currentUser.id === 'ac') {
                     setCurrentView('wo-materials');
                 }
             },
@@ -74,7 +74,8 @@ const App = () => {
     // When user changes, reset to their first nav link (unless on hub)
     useEffect(() => {
         if (currentView !== 'hub') {
-            const defaultView = navLinks[currentUser.id]?.[0]?.view || 'dashboard';
+            const normalizedId = currentUser.id === 'requestor' ? 'requestor_mrf' : currentUser.id;
+            const defaultView = navLinks[normalizedId]?.[0]?.view || 'dashboard';
             setCurrentView(defaultView);
         }
     }, [currentUser.id]);

@@ -28,7 +28,8 @@ export const Sidebar = ({ currentUser, onUserChange, currentView, onNavigate, na
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [dropdownRef]);
 
-    const currentNavLinks = navLinks[currentUser.id] || [];
+    const normalizedId = currentUser.id === 'requestor' ? 'requestor_mrf' : currentUser.id;
+    const currentNavLinks = navLinks[normalizedId] || [];
 
     return React.createElement('aside', { className: "w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col" },
         React.createElement('div', { className: "h-16 flex items-center justify-center border-b border-gray-200" },

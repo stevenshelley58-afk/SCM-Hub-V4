@@ -30,7 +30,7 @@ const site = {
 };
 
 const hubUsers = [
-  { id: "requestor", role: "Requestor" },
+  { id: "requestor_mrf", role: "Requestor - MRF" },
   { id: "ac", role: "Area Coordinator" },
   { id: "qube", role: "Qube User" },
   { id: "mc", role: "Material Coordinator" }
@@ -40,7 +40,7 @@ const hubUsers = [
 const ltrUsers = [
   { id: "mlc", role: "Logistics Coordinator" },
   { id: "driver", role: "Driver" },
-  { id: "requestor", role: "Requestor" }
+  { id: "requestor_ltr", role: "Requestor - Logistics" }
 ];
 
 const icons = {
@@ -146,7 +146,8 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     setShowModal(false);
     onUserChange(actualUser);
 
-    const defaultView = navLinks[actualUser.id]?.[0]?.view || 'control-panel';
+    const normalizedId = actualUser.id === 'requestor' ? 'requestor_mrf' : actualUser.id;
+    const defaultView = navLinks[normalizedId]?.[0]?.view || 'control-panel';
     onNavigate(defaultView);
   };
 
@@ -170,7 +171,7 @@ export const OperationsHub: React.FC<OperationsHubProps> = ({ currentUser, onNav
     onNavigate(
       selectedLTRUser.id === 'driver'
         ? 'logistics-driver'
-        : selectedLTRUser.id === 'requestor'
+        : selectedLTRUser.id === 'requestor_ltr'
           ? 'ltr-request'
           : 'logistics-dispatcher'
     );
