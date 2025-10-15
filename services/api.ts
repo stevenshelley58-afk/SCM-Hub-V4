@@ -246,11 +246,11 @@ export const navLinks: { [key: string]: { view: string; label: string; icon: str
         { view: 'onhold', label: 'On Hold', icon: 'PauseCircleIcon' }
     ],
     mc: [
+        { view: 'control-panel', label: 'MC Control Panel', icon: 'Cog8ToothIcon' },
         { view: 'p1-approval', label: 'P1 Approval Queue', icon: 'FireIcon' },
         { view: 'priority-queue', label: 'Priority Queue', icon: 'QueueListIcon' },
         { view: 'workflow-diagram', label: 'Workflow Diagram', icon: 'DocumentTextIcon' },
         { view: 'location-management', label: 'Delivery Locations', icon: 'MapPinIcon' },
-        { view: 'control-panel', label: 'Control Panel', icon: 'Cog8ToothIcon' },
         { view: 'integrations', label: 'Integrations', icon: 'CloudIcon' }
     ],
     mlc: [

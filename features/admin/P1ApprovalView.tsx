@@ -18,7 +18,7 @@ export const P1ApprovalView = ({ navigate }: P1ApprovalViewProps) => {
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        const pending = mockRequestsData.filter(r => r.status === 'Pending Approval') as MaterialRequest[];
+        const pending = mockRequestsData.filter(r => r.status === 'Submitted' && r.priority === 'P1') as MaterialRequest[];
         pending.sort((a, b) => {
             // Sort by required time (most urgent first)
             return new Date(a.RequiredByTimestamp).getTime() - new Date(b.RequiredByTimestamp).getTime();
@@ -38,8 +38,8 @@ export const P1ApprovalView = ({ navigate }: P1ApprovalViewProps) => {
         
         const requestIndex = mockRequestsData.findIndex(r => r.id === approvalModal.request!.id);
         if (requestIndex !== -1) {
-            // Update status to Approved (will automatically move to Submitted for picking)
-            mockRequestsData[requestIndex].status = 'Approved';
+            // Update status to Picking (approved P1 requests go directly to picking)
+            mockRequestsData[requestIndex].status = 'Picking';
             
             // Add approval info
             mockRequestsData[requestIndex].approvalInfo = {
@@ -51,23 +51,14 @@ export const P1ApprovalView = ({ navigate }: P1ApprovalViewProps) => {
             // Add to status history
             mockRequestsData[requestIndex].statusHistory = addStatusHistoryEntry(
                 mockRequestsData[requestIndex].statusHistory,
-                'Approved',
+                'Picking',
                 'Material Coordinator',
                 notes ? `Approved: ${notes}` : 'P1 request approved'
             );
             
-            // Immediately move to Submitted status for warehouse
+            // Refresh the list
             setTimeout(() => {
-                const idx = mockRequestsData.findIndex(r => r.id === approvalModal.request!.id);
-                if (idx !== -1 && mockRequestsData[idx].status === 'Approved') {
-                    mockRequestsData[idx].status = 'Submitted';
-                    mockRequestsData[idx].statusHistory = addStatusHistoryEntry(
-                        mockRequestsData[idx].statusHistory,
-                        'Submitted',
-                        'System',
-                        'Auto-submitted after P1 approval'
-                    );
-                }
+                setRefreshKey(prev => prev + 1);
             }, 100);
             
             console.log(`✅ P1 Request ${approvalModal.request.id} approved by MC`);
